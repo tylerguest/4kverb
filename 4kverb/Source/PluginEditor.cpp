@@ -28,9 +28,25 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor (_4kverbAudioProcessor&
     widthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "width", widthSlider);
     freezeModeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.getParameters(), "freezeMode", freezeModeButton);
 
+
+    // Initialize and add labels
+    roomSizeLabel.setText("Room Size", juce::dontSendNotification);
+    dampingLabel.setText("Damping", juce::dontSendNotification);
+    wetLevelLabel.setText("Wet Level", juce::dontSendNotification);
+    dryLevelLabel.setText("Dry Level", juce::dontSendNotification);
+    widthLabel.setText("Width", juce::dontSendNotification);
+    freezeModeLabel.setText("Freeze Mode", juce::dontSendNotification);
+
+    addAndMakeVisible(roomSizeLabel);
+    addAndMakeVisible(dampingLabel);
+    addAndMakeVisible(wetLevelLabel);
+    addAndMakeVisible(dryLevelLabel);
+    addAndMakeVisible(widthLabel);
+    addAndMakeVisible(freezeModeLabel);
+
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (400, 800);
 }
 _4kverbAudioProcessorEditor::~_4kverbAudioProcessorEditor()
 {
@@ -51,10 +67,20 @@ void _4kverbAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
     auto area = getLocalBounds();
-    roomSizeSlider.setBounds(area.removeFromTop(50));
-    dampingSlider.setBounds(area.removeFromTop(50));
-    wetLevelSlider.setBounds(area.removeFromTop(50));
-    dryLevelSlider.setBounds(area.removeFromTop(50));
-    widthSlider.setBounds(area.removeFromTop(50));
-    freezeModeButton.setBounds(area.removeFromTop(50));
+    auto labelHeight = 20;
+    auto sliderHeight = 50;
+
+    roomSizeLabel.setBounds(area.removeFromTop(labelHeight));
+    roomSizeSlider.setBounds(area.removeFromTop(sliderHeight));
+    dampingLabel.setBounds(area.removeFromTop(labelHeight));
+    dampingSlider.setBounds(area.removeFromTop(sliderHeight));
+    wetLevelLabel.setBounds(area.removeFromTop(labelHeight));
+    wetLevelSlider.setBounds(area.removeFromTop(sliderHeight));
+    dryLevelLabel.setBounds(area.removeFromTop(labelHeight));
+    dryLevelSlider.setBounds(area.removeFromTop(sliderHeight));
+    widthLabel.setBounds(area.removeFromTop(labelHeight));
+    widthSlider.setBounds(area.removeFromTop(sliderHeight));
+    freezeModeLabel.setBounds(area.removeFromTop(labelHeight));
+    freezeModeButton.setBounds(area.removeFromTop(sliderHeight));
+
 }

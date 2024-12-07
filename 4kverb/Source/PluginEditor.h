@@ -43,5 +43,13 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> freezeModeAttachment;
 
+    // Declare labels
+    juce::Label roomSizeLabel;
+    juce::Label dampingLabel;
+    juce::Label wetLevelLabel;
+    juce::Label dryLevelLabel;
+    juce::Label widthLabel;
+    juce::Label freezeModeLabel;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessorEditor)
 };
