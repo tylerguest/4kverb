@@ -11,17 +11,31 @@
 
 //==============================================================================
 _4kverbAudioProcessor::_4kverbAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
+    : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       )
-#endif
+                       ),
+      parameters(*this, nullptr, "PARAMETERS",
+                 {
+                     std::make_unique<juce::AudioParameterFloat>("roomSize", "Room Size", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("damping", "Damping", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("wetLevel", "Wet Level", 0.0f, 1.0f, 0.33f),
+                     std::make_unique<juce::AudioParameterFloat>("dryLevel", "Dry Level", 0.0f, 1.0f, 0.4f),
+                     std::make_unique<juce::AudioParameterFloat>("width", "Width", 0.0f, 1.0f, 1.0f),
+                     std::make_unique<juce::AudioParameterBool>("freezeMode", "Freeze Mode", false)
+                 })
 {
+    reverbParams.roomSize = *parameters.getRawParameterValue("roomSize");
+    reverbParams.damping = *parameters.getRawParameterValue("damping");
+    reverbParams.wetLevel = *parameters.getRawParameterValue("wetLevel");
+    reverbParams.dryLevel = *parameters.getRawParameterValue("dryLevel");
+    reverbParams.width = *parameters.getRawParameterValue("width");
+    reverbParams.freezeMode = *parameters.getRawParameterValue("freezeMode");
+    reverb.setParameters(reverbParams);
 }
 
 _4kverbAudioProcessor::~_4kverbAudioProcessor()
