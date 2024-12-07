@@ -4,6 +4,7 @@
     This file contains the basic framework code for a JUCE plugin processor.
 
   ==============================================================================
+
 */
 
 #include "PluginProcessor.h"
@@ -107,8 +108,7 @@ void _4kverbAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void _4kverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    reverb.setSampleRate(sampleRate);
 }
 
 void _4kverbAudioProcessor::releaseResources()
@@ -158,17 +158,20 @@ void _4kverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
+    // Update reverb parameters
+    reverbParams.roomSize = *parameters.getRawParameterValue("roomSize");
+    reverbParams.damping = *parameters.getRawParameterValue("damping");
+    reverbParams.wetLevel = *parameters.getRawParameterValue("wetLevel");
+    reverbParams.dryLevel = *parameters.getRawParameterValue("dryLevel");
+    reverbParams.width = *parameters.getRawParameterValue("width");
+    reverbParams.freezeMode = *parameters.getRawParameterValue("freezeMode");
+    reverb.setParameters(reverbParams);
+
+    // Apply reverb to each channel
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
+        reverb.processMono(channelData, buffer.getNumSamples());
     }
 }
 
@@ -186,15 +189,24 @@ juce::AudioProcessorEditor* _4kverbAudioProcessor::createEditor()
 //==============================================================================
 void _4kverbAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    juce::MemoryOutputStream stream(destData, true);
+    stream.writeFloat(*parameters.getRawParameterValue("roomSize"));
+    stream.writeFloat(*parameters.getRawParameterValue("damping"));
+    stream.writeFloat(*parameters.getRawParameterValue("wetLevel"));
+    stream.writeFloat(*parameters.getRawParameterValue("dryLevel"));
+    stream.writeFloat(*parameters.getRawParameterValue("width"));
+    stream.writeBool(*parameters.getRawParameterValue("freezeMode"));
 }
 
 void _4kverbAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    juce::MemoryInputStream stream(data, static_cast<size_t> (sizeInBytes), false);
+    parameters.getParameter("roomSize")->setValueNotifyingHost(stream.readFloat());
+    parameters.getParameter("damping")->setValueNotifyingHost(stream.readFloat());
+    parameters.getParameter("wetLevel")->setValueNotifyingHost(stream.readFloat());
+    parameters.getParameter("dryLevel")->setValueNotifyingHost(stream.readFloat());
+    parameters.getParameter("width")->setValueNotifyingHost(stream.readFloat());
+    parameters.getParameter("freezeMode")->setValueNotifyingHost(stream.readBool());
 }
 
 //==============================================================================

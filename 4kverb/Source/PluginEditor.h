@@ -29,5 +29,19 @@ private:
     // access the processor object that created it.
     _4kverbAudioProcessor& audioProcessor;
 
+    juce::Slider roomSizeSlider;
+    juce::Slider dampingSlider;
+    juce::Slider wetLevelSlider;
+    juce::Slider dryLevelSlider;
+    juce::Slider widthSlider;
+    juce::ToggleButton freezeModeButton;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomSizeAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dampingAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> wetLevelAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryLevelAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> freezeModeAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessorEditor)
 };
