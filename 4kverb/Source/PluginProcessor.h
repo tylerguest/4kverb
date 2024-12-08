@@ -65,6 +65,8 @@ private:
     float lastHighCut = -1.0f; // Store the last highCut value to detect changes
     float lastLowCut = -1.0f;  // Store the last lowCut value to detect changes
 
+    // In your plugin processor class
+    std::vector<juce::dsp::DelayLine<float>> predelayLines;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessor)
 };

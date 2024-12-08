@@ -13,7 +13,7 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
                        ),
       parameters(*this, nullptr, "PARAMETERS",
                  {
-                     std::make_unique<juce::AudioParameterFloat>("predelay", "PreDelay", 0.0f, 100.0f, 20.0f),
+                     std::make_unique<juce::AudioParameterFloat>("predelay", "PreDelay", 0.0f, 500.0f, 20.0f),
                      std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 1.0f),
                      std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.2f, 70.0f, 4.0f),
                      std::make_unique<juce::AudioParameterFloat>("size", "Size", 0.0f, 1.0f, 0.5f),
@@ -27,6 +27,7 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
     reverbParams.wetLevel = *parameters.getRawParameterValue("mix");
     reverbParams.dryLevel = 1.0f - reverbParams.wetLevel;
     reverbParams.width = 1.0f;
+
 }
 
 _4kverbAudioProcessor::~_4kverbAudioProcessor()
@@ -110,10 +111,20 @@ void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock
     lowCutFilters.clear();
     lowCutFilters.resize(totalNumChannels);
 
+    predelayLines.clear();
+    predelayLines.resize(totalNumChannels); // Ensure predelayLines is resized
+
     juce::dsp::ProcessSpec spec;
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = 1; // Each filter handles one channel
+
+    for (auto& delayLine : predelayLines)
+    {
+        delayLine.setMaximumDelayInSamples(static_cast<int>(sampleRate * 0.5)); // 500ms max predelay
+        delayLine.prepare(spec);
+        delayLine.reset();
+    }
 
     for (auto& filter : highCutFilters)
     {
@@ -132,6 +143,7 @@ void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock
         // Initialize with default high-pass coefficients (optional)
         filter.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, 20.0f);
     }
+
 }
 
 void _4kverbAudioProcessor::releaseResources()
@@ -179,6 +191,7 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     auto newDryLevel = 1.0f - newWetLevel;
     auto newHighCut = parameters.getRawParameterValue("highCut")->load();
     auto newLowCut = parameters.getRawParameterValue("lowCut")->load();
+    auto newPredelay = parameters.getRawParameterValue("predelay")->load();
 
     // Update reverb parameters if they've changed
     if (reverbParams.roomSize != newRoomSize ||
@@ -225,16 +238,31 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     juce::AudioBuffer<float> wetBuffer(buffer.getNumChannels(), buffer.getNumSamples());
     wetBuffer.makeCopyOf(buffer);
 
+    // Apply predelay to the wet buffer
+    for (int channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
+    {
+        auto* wetData = wetBuffer.getWritePointer(channel);
+
+        // Update predelay time for each channel
+        predelayLines[channel].setDelay(newPredelay * getSampleRate() / 1000.0f);
+
+        for (int sample = 0; sample < wetBuffer.getNumSamples(); ++sample)
+        {
+            predelayLines[channel].pushSample(0, wetData[sample]);
+            wetData[sample] = predelayLines[channel].popSample(0);
+        }
+    }
+
     // Process the wet buffer with reverb
-    if (buffer.getNumChannels() >= 2)
+    if (wetBuffer.getNumChannels() >= 2)
     {
         reverb.processStereo(wetBuffer.getWritePointer(0),
             wetBuffer.getWritePointer(1),
-            buffer.getNumSamples());
+            wetBuffer.getNumSamples());
     }
-    else if (buffer.getNumChannels() == 1)
+    else if (wetBuffer.getNumChannels() == 1)
     {
-        reverb.processMono(wetBuffer.getWritePointer(0), buffer.getNumSamples());
+        reverb.processMono(wetBuffer.getWritePointer(0), wetBuffer.getNumSamples());
     }
 
     // Apply high cut filter to each channel of the wet buffer
@@ -267,6 +295,7 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
         }
     }
 }
+
 
 //==============================================================================
 bool _4kverbAudioProcessor::hasEditor() const
