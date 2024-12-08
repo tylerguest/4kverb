@@ -13,8 +13,8 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
                        ),
       parameters(*this, nullptr, "PARAMETERS",
                  {
-                     std::make_unique<juce::AudioParameterFloat>("predelay", "PreDelay", 0.0f, 1.0f, 0.0f),
-                     std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("predelay", "PreDelay", 0.0f, 100.0f, 20.0f),
+                     std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 1.0f),
                      std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.0f, 1.0f, 0.5f),
                      std::make_unique<juce::AudioParameterFloat>("size", "Size", 0.0f, 1.0f, 0.5f),
                      std::make_unique<juce::AudioParameterFloat>("highCut", "High Cut", 0.0f, 1.0f, 0.5f),
