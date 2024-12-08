@@ -29,29 +29,38 @@ private:
     // access the processor object that created it.
     _4kverbAudioProcessor& audioProcessor;
 
-    // Declare new sliders
     juce::Slider predelaySlider;
-    juce::Slider mixSlider;
-    juce::Slider decaySlider;
-    juce::Slider sizeSlider;
-    juce::Slider highCutSlider;
-    juce::Slider lowCutSlider;
-
-    // Declare new attachments
+    juce::Label predelayLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> predelayAttachment;
+
+    juce::Slider mixSlider;
+    juce::Label mixLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
+
+    juce::Slider decaySlider;
+    juce::Label decayLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayAttachment;
+
+    juce::Slider sizeSlider;
+    juce::Label sizeLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sizeAttachment;
+
+    juce::Slider highCutSlider;
+    juce::Label highCutLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> highCutAttachment;
+
+    juce::Slider lowCutSlider;
+    juce::Label lowCutLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> lowCutAttachment;
 
-    // Declare new labels
-    juce::Label predelayLabel;
-    juce::Label mixLabel;
-    juce::Label decayLabel;
-    juce::Label sizeLabel;
-    juce::Label highCutLabel;
-    juce::Label lowCutLabel;
+    // New modulation sliders
+    juce::Slider rateSlider;
+    juce::Label rateLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rateAttachment;
+
+    juce::Slider depthSlider;
+    juce::Label depthLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessorEditor)
 };

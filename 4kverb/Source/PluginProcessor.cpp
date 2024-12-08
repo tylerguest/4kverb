@@ -18,7 +18,9 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
                      std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.2f, 70.0f, 4.0f),
                      std::make_unique<juce::AudioParameterFloat>("size", "Size", 0.0f, 1.0f, 0.5f),
                      std::make_unique<juce::AudioParameterFloat>("highCut", "High Cut", 1000.0f, 21000.0f, 8000.0f),
-                     std::make_unique<juce::AudioParameterFloat>("lowCut", "Low Cut", 10.0f, 500.0f, 10.0f)
+                     std::make_unique<juce::AudioParameterFloat>("lowCut", "Low Cut", 10.0f, 500.0f, 10.0f),
+                     std::make_unique<juce::AudioParameterFloat>("rate", "Rate", 0.1f, 10.0f, 1.0f),
+                     std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 100.0f, 50.0f)
                  })
 {
     // Initialize reverb parameters
