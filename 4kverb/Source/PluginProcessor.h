@@ -58,5 +58,12 @@ private:
 
     juce::Reverb::Parameters reverbParams;
 
+    // Declare vectors of filters for handling multiple channels
+    std::vector<juce::dsp::IIR::Filter<float>> highCutFilters;
+    std::vector<juce::dsp::IIR::Filter<float>> lowCutFilters;
+
+    float lastHighCut = -1.0f; // Store the last highCut value to detect changes
+    float lastLowCut = -1.0f;  // Store the last lowCut value to detect changes
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessor)
 };

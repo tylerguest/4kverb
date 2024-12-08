@@ -17,8 +17,8 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
                      std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 1.0f),
                      std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.2f, 70.0f, 4.0f),
                      std::make_unique<juce::AudioParameterFloat>("size", "Size", 0.0f, 1.0f, 0.5f),
-                     std::make_unique<juce::AudioParameterFloat>("highCut", "High Cut", 0.0f, 1.0f, 0.5f),
-                     std::make_unique<juce::AudioParameterFloat>("lowCut", "Low Cut", 0.0f, 1.0f, 0.5f)
+                     std::make_unique<juce::AudioParameterFloat>("highCut", "High Cut", 1000.0f, 21000.0f, 8000.0f),
+                     std::make_unique<juce::AudioParameterFloat>("lowCut", "Low Cut", 10.0f, 500.0f, 10.0f)
                  })
 {
     // Initialize reverb parameters
@@ -97,11 +97,41 @@ void _4kverbAudioProcessor::changeProgramName (int index, const juce::String& ne
 //==============================================================================
 void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    // Set the sample rate for the reverb instance
     reverb.setSampleRate(sampleRate);
 
-    // Set initial parameters
+    // Prepare reverb with initial parameters
     reverb.setParameters(reverbParams);
+
+    // Prepare high cut filters for each channel
+    auto totalNumChannels = getTotalNumOutputChannels();
+    highCutFilters.clear();
+    highCutFilters.resize(totalNumChannels);
+
+    lowCutFilters.clear();
+    lowCutFilters.resize(totalNumChannels);
+
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = 1; // Each filter handles one channel
+
+    for (auto& filter : highCutFilters)
+    {
+        filter.prepare(spec);
+        filter.reset();
+
+        // Initialize with default low-pass coefficients (optional)
+        filter.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, 1000.0f);
+    }
+
+    for (auto& filter : lowCutFilters)
+    {
+        filter.prepare(spec);
+        filter.reset();
+
+        // Initialize with default high-pass coefficients (optional)
+        filter.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, 20.0f);
+    }
 }
 
 void _4kverbAudioProcessor::releaseResources()
@@ -142,12 +172,15 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
-    // Update reverb parameters if they have changed
+    // Retrieve parameter values
     auto newRoomSize = parameters.getRawParameterValue("size")->load();
     auto newDamping = parameters.getRawParameterValue("decay")->load();
     auto newWetLevel = parameters.getRawParameterValue("mix")->load();
     auto newDryLevel = 1.0f - newWetLevel;
+    auto newHighCut = parameters.getRawParameterValue("highCut")->load();
+    auto newLowCut = parameters.getRawParameterValue("lowCut")->load();
 
+    // Update reverb parameters if they've changed
     if (reverbParams.roomSize != newRoomSize ||
         reverbParams.damping != newDamping ||
         reverbParams.wetLevel != newWetLevel ||
@@ -162,7 +195,33 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
         reverb.setParameters(reverbParams);
     }
 
-    // Create a wet buffer
+    // Update high cut filter coefficients if `highCut` parameter has changed
+    if (lastHighCut != newHighCut)
+    {
+        auto highCutCoefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), newHighCut);
+
+        for (auto& filter : highCutFilters)
+        {
+            *filter.coefficients = *highCutCoefficients;
+        }
+
+        lastHighCut = newHighCut;
+    }
+
+    // Update low cut filter coefficients if `lowCut` parameter has changed
+    if (lastLowCut != newLowCut)
+    {
+        auto lowCutCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), newLowCut);
+
+        for (auto& filter : lowCutFilters)
+        {
+            *filter.coefficients = *lowCutCoefficients;
+        }
+
+        lastLowCut = newLowCut;
+    }
+
+    // Create a wet buffer and copy the input buffer into it
     juce::AudioBuffer<float> wetBuffer(buffer.getNumChannels(), buffer.getNumSamples());
     wetBuffer.makeCopyOf(buffer);
 
@@ -173,9 +232,27 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
             wetBuffer.getWritePointer(1),
             buffer.getNumSamples());
     }
-    else
+    else if (buffer.getNumChannels() == 1)
     {
         reverb.processMono(wetBuffer.getWritePointer(0), buffer.getNumSamples());
+    }
+
+    // Apply high cut filter to each channel of the wet buffer
+    juce::dsp::AudioBlock<float> wetBlock(wetBuffer);
+
+    for (size_t channel = 0; channel < wetBlock.getNumChannels(); ++channel)
+    {
+        auto channelBlock = wetBlock.getSingleChannelBlock(channel);
+        juce::dsp::ProcessContextReplacing<float> context(channelBlock);
+        highCutFilters[channel].process(context);
+    }
+
+    // Apply low cut filter to each channel of the wet buffer
+    for (size_t channel = 0; channel < wetBlock.getNumChannels(); ++channel)
+    {
+        auto channelBlock = wetBlock.getSingleChannelBlock(channel);
+        juce::dsp::ProcessContextReplacing<float> context(channelBlock);
+        lowCutFilters[channel].process(context);
     }
 
     // Mix dry and wet signals
