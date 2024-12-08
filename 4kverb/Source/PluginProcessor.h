@@ -68,5 +68,8 @@ private:
     // In your plugin processor class
     std::vector<juce::dsp::DelayLine<float>> predelayLines;
 
+
+    float modulationDepth = 0.5f;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessor)
 };

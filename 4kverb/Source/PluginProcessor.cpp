@@ -194,6 +194,8 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     auto newHighCut = parameters.getRawParameterValue("highCut")->load();
     auto newLowCut = parameters.getRawParameterValue("lowCut")->load();
     auto newPredelay = parameters.getRawParameterValue("predelay")->load();
+    auto newRate = parameters.getRawParameterValue("rate")->load();
+    auto newDepth = parameters.getRawParameterValue("depth")->load();
 
     // Update reverb parameters if they've changed
     if (reverbParams.roomSize != newRoomSize ||
@@ -255,6 +257,23 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
         }
     }
 
+    // Apply modulation to the delay lines
+    static float phase = 0.0f;
+    float phaseIncrement = 2.0f * juce::MathConstants<float>::pi * newRate / getSampleRate();
+    for (int channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
+    {
+        auto* wetData = wetBuffer.getWritePointer(channel);
+        for (int sample = 0; sample < wetBuffer.getNumSamples(); ++sample)
+        {
+            float modulatedDelay = newPredelay + newDepth * std::sin(phase);
+            modulatedDelay = juce::jlimit(0.0f, 500.0f, modulatedDelay); // Clamp the modulated delay value
+            predelayLines[channel].setDelay(modulatedDelay * getSampleRate() / 1000.0f);
+            phase += phaseIncrement;
+            if (phase >= 2.0f * juce::MathConstants<float>::pi)
+                phase -= 2.0f * juce::MathConstants<float>::pi;
+        }
+    }
+
     // Process the wet buffer with reverb
     if (wetBuffer.getNumChannels() >= 2)
     {
@@ -297,6 +316,7 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
         }
     }
 }
+
 
 
 //==============================================================================
