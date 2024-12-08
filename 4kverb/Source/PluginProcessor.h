@@ -1,14 +1,7 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
+#include <juce_dsp/juce_dsp.h>
 
 //==============================================================================
 /**
@@ -24,7 +17,7 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
+   #if ! JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
@@ -54,12 +47,15 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
     // Provide a getter method for parameters
-    juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+    juce::AudioProcessorValueTreeState& getParameters();
 
 private:
     //==============================================================================
     juce::AudioProcessorValueTreeState parameters;
+    juce::dsp::DelayLine<float> preDelayLine;
+
     juce::Reverb reverb;
+
     juce::Reverb::Parameters reverbParams;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessor)

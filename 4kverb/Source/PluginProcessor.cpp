@@ -1,12 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -17,26 +8,25 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
                       #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+                       .withOutput ("Output",  juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
       parameters(*this, nullptr, "PARAMETERS",
                  {
-                     std::make_unique<juce::AudioParameterFloat>("roomSize", "Room Size", 0.0f, 1.0f, 0.5f),
-                     std::make_unique<juce::AudioParameterFloat>("damping", "Damping", 0.0f, 1.0f, 0.5f),
-                     std::make_unique<juce::AudioParameterFloat>("wetLevel", "Wet Level", 0.0f, 1.0f, 0.33f),
-                     std::make_unique<juce::AudioParameterFloat>("dryLevel", "Dry Level", 0.0f, 1.0f, 0.4f),
-                     std::make_unique<juce::AudioParameterFloat>("width", "Width", 0.0f, 1.0f, 1.0f),
-                     std::make_unique<juce::AudioParameterBool>("freezeMode", "Freeze Mode", false)
+                     std::make_unique<juce::AudioParameterFloat>("predelay", "PreDelay", 0.0f, 1.0f, 0.0f),
+                     std::make_unique<juce::AudioParameterFloat>("mix", "Mix", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("decay", "Decay", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("size", "Size", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("highCut", "High Cut", 0.0f, 1.0f, 0.5f),
+                     std::make_unique<juce::AudioParameterFloat>("lowCut", "Low Cut", 0.0f, 1.0f, 0.5f)
                  })
 {
-    reverbParams.roomSize = *parameters.getRawParameterValue("roomSize");
-    reverbParams.damping = *parameters.getRawParameterValue("damping");
-    reverbParams.wetLevel = *parameters.getRawParameterValue("wetLevel");
-    reverbParams.dryLevel = *parameters.getRawParameterValue("dryLevel");
-    reverbParams.width = *parameters.getRawParameterValue("width");
-    reverbParams.freezeMode = *parameters.getRawParameterValue("freezeMode");
-    reverb.setParameters(reverbParams);
+    // Initialize reverb parameters
+    reverbParams.roomSize = *parameters.getRawParameterValue("size");
+    reverbParams.damping = *parameters.getRawParameterValue("decay");
+    reverbParams.wetLevel = *parameters.getRawParameterValue("mix");
+    reverbParams.dryLevel = 1.0f - reverbParams.wetLevel;
+    reverbParams.width = 1.0f;
 }
 
 _4kverbAudioProcessor::~_4kverbAudioProcessor()
@@ -83,8 +73,7 @@ double _4kverbAudioProcessor::getTailLengthSeconds() const
 
 int _4kverbAudioProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    return 1;
 }
 
 int _4kverbAudioProcessor::getCurrentProgram()
@@ -106,15 +95,17 @@ void _4kverbAudioProcessor::changeProgramName (int index, const juce::String& ne
 }
 
 //==============================================================================
-void _4kverbAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
+    // Set the sample rate for the reverb instance
     reverb.setSampleRate(sampleRate);
+
+    // Set initial parameters
+    reverb.setParameters(reverbParams);
 }
 
 void _4kverbAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -124,16 +115,13 @@ bool _4kverbAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
     juce::ignoreUnused (layouts);
     return true;
   #else
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    // Some plugin hosts, such as certain GarageBand versions, will only
-    // load plugins that support stereo bus layouts.
+    // Only mono or stereo is supported
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
    #if ! JucePlugin_IsSynth
+    // Input and output layouts must match
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
    #endif
@@ -143,42 +131,70 @@ bool _4kverbAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 }
 #endif
 
-void _4kverbAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
+
+    auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
+    // Clear unused output channels
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear(i, 0, buffer.getNumSamples());
 
-    // Update reverb parameters
-    reverbParams.roomSize = *parameters.getRawParameterValue("roomSize");
-    reverbParams.damping = *parameters.getRawParameterValue("damping");
-    reverbParams.wetLevel = *parameters.getRawParameterValue("wetLevel");
-    reverbParams.dryLevel = *parameters.getRawParameterValue("dryLevel");
-    reverbParams.width = *parameters.getRawParameterValue("width");
-    reverbParams.freezeMode = *parameters.getRawParameterValue("freezeMode");
-    reverb.setParameters(reverbParams);
+    // Update reverb parameters if they have changed
+    auto newRoomSize = parameters.getRawParameterValue("size")->load();
+    auto newDamping = parameters.getRawParameterValue("decay")->load();
+    auto newWetLevel = parameters.getRawParameterValue("mix")->load();
+    auto newDryLevel = 1.0f - newWetLevel;
 
-    // Apply reverb to each channel
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    if (reverbParams.roomSize != newRoomSize ||
+        reverbParams.damping != newDamping ||
+        reverbParams.wetLevel != newWetLevel ||
+        reverbParams.dryLevel != newDryLevel)
     {
-        auto* channelData = buffer.getWritePointer (channel);
-        reverb.processMono(channelData, buffer.getNumSamples());
+        reverbParams.roomSize = newRoomSize;
+        reverbParams.damping = newDamping;
+        reverbParams.wetLevel = newWetLevel;
+        reverbParams.dryLevel = newDryLevel;
+        reverbParams.width = 1.0f;
+
+        reverb.setParameters(reverbParams);
+    }
+
+    // Create a wet buffer
+    juce::AudioBuffer<float> wetBuffer(buffer.getNumChannels(), buffer.getNumSamples());
+    wetBuffer.makeCopyOf(buffer);
+
+    // Process the wet buffer with reverb
+    if (buffer.getNumChannels() >= 2)
+    {
+        reverb.processStereo(wetBuffer.getWritePointer(0),
+            wetBuffer.getWritePointer(1),
+            buffer.getNumSamples());
+    }
+    else
+    {
+        reverb.processMono(wetBuffer.getWritePointer(0), buffer.getNumSamples());
+    }
+
+    // Mix dry and wet signals
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
+    {
+        auto* dryData = buffer.getWritePointer(channel);
+        auto* wetData = wetBuffer.getReadPointer(channel);
+
+        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
+        {
+            dryData[sample] = dryData[sample] * reverbParams.dryLevel + wetData[sample] * reverbParams.wetLevel;
+        }
     }
 }
 
 //==============================================================================
 bool _4kverbAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* _4kverbAudioProcessor::createEditor()
@@ -189,28 +205,26 @@ juce::AudioProcessorEditor* _4kverbAudioProcessor::createEditor()
 //==============================================================================
 void _4kverbAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    juce::MemoryOutputStream stream(destData, true);
-    stream.writeFloat(*parameters.getRawParameterValue("roomSize"));
-    stream.writeFloat(*parameters.getRawParameterValue("damping"));
-    stream.writeFloat(*parameters.getRawParameterValue("wetLevel"));
-    stream.writeFloat(*parameters.getRawParameterValue("dryLevel"));
-    stream.writeFloat(*parameters.getRawParameterValue("width"));
-    stream.writeBool(*parameters.getRawParameterValue("freezeMode"));
+    auto state = parameters.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
-void _4kverbAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void _4kverbAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    juce::MemoryInputStream stream(data, static_cast<size_t> (sizeInBytes), false);
-    parameters.getParameter("roomSize")->setValueNotifyingHost(stream.readFloat());
-    parameters.getParameter("damping")->setValueNotifyingHost(stream.readFloat());
-    parameters.getParameter("wetLevel")->setValueNotifyingHost(stream.readFloat());
-    parameters.getParameter("dryLevel")->setValueNotifyingHost(stream.readFloat());
-    parameters.getParameter("width")->setValueNotifyingHost(stream.readFloat());
-    parameters.getParameter("freezeMode")->setValueNotifyingHost(stream.readBool());
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+
+    if (xml.get() != nullptr)
+        if (xml->hasTagName(parameters.state.getType()))
+            parameters.replaceState(juce::ValueTree::fromXml(*xml));
+}
+
+juce::AudioProcessorValueTreeState& _4kverbAudioProcessor::getParameters()
+{
+    return parameters;
 }
 
 //==============================================================================
-// This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new _4kverbAudioProcessor();

@@ -29,27 +29,29 @@ private:
     // access the processor object that created it.
     _4kverbAudioProcessor& audioProcessor;
 
-    juce::Slider roomSizeSlider;
-    juce::Slider dampingSlider;
-    juce::Slider wetLevelSlider;
-    juce::Slider dryLevelSlider;
-    juce::Slider widthSlider;
-    juce::ToggleButton freezeModeButton;
+    // Declare new sliders
+    juce::Slider predelaySlider;
+    juce::Slider mixSlider;
+    juce::Slider decaySlider;
+    juce::Slider sizeSlider;
+    juce::Slider highCutSlider;
+    juce::Slider lowCutSlider;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> roomSizeAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dampingAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> wetLevelAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> dryLevelAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> widthAttachment;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> freezeModeAttachment;
+    // Declare new attachments
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> predelayAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> decayAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sizeAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> highCutAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> lowCutAttachment;
 
-    // Declare labels
-    juce::Label roomSizeLabel;
-    juce::Label dampingLabel;
-    juce::Label wetLevelLabel;
-    juce::Label dryLevelLabel;
-    juce::Label widthLabel;
-    juce::Label freezeModeLabel;
+    // Declare new labels
+    juce::Label predelayLabel;
+    juce::Label mixLabel;
+    juce::Label decayLabel;
+    juce::Label sizeLabel;
+    juce::Label highCutLabel;
+    juce::Label lowCutLabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessorEditor)
 };
