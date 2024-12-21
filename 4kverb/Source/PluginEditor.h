@@ -1,33 +1,26 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "CustomLookAndFeel.h"
 
 //==============================================================================
 /**
 */
-class _4kverbAudioProcessorEditor  : public juce::AudioProcessorEditor
+class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
-    _4kverbAudioProcessorEditor (_4kverbAudioProcessor&);
+    _4kverbAudioProcessorEditor(_4kverbAudioProcessor&);
     ~_4kverbAudioProcessorEditor() override;
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     _4kverbAudioProcessor& audioProcessor;
+
+    CustomLookAndFeel customLookAndFeel;
 
     juce::Slider predelaySlider;
     juce::Label predelayLabel;
@@ -53,7 +46,6 @@ private:
     juce::Label lowCutLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> lowCutAttachment;
 
-    // New modulation sliders
     juce::Slider rateSlider;
     juce::Label rateLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> rateAttachment;
@@ -62,5 +54,5 @@ private:
     juce::Label depthLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(_4kverbAudioProcessorEditor)
 };
