@@ -17,6 +17,8 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
+    void setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor);
+
 private:
     _4kverbAudioProcessor& audioProcessor;
 

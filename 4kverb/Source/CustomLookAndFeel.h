@@ -8,8 +8,15 @@ public:
     CustomLookAndFeel()
     {
         setColour(juce::Slider::thumbColourId, juce::Colours::darkgrey);
-        setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::grey);
+        setColour(juce::Slider::rotarySliderFillColourId, juce::Colours::lightblue);
         setColour(juce::Slider::rotarySliderOutlineColourId, juce::Colours::black);
+    }
+
+    void setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor)
+    {
+        setColour(juce::Slider::thumbColourId, thumbColor);
+        setColour(juce::Slider::rotarySliderFillColourId, fillColor);
+        setColour(juce::Slider::rotarySliderOutlineColourId, outlineColor);
     }
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
@@ -31,13 +38,13 @@ public:
         g.setColour(slider.findColour(juce::Slider::rotarySliderOutlineColourId));
         g.drawEllipse(rx, ry, rw, rw, 1.0f);
 
+        // Draw the notch
         juce::Path p;
         auto pointerLength = radius * 0.6f;
         auto pointerThickness = 2.0f;
         p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
         p.applyTransform(juce::AffineTransform::rotation(angle).translated(centerX, centerY));
 
-        // Pointer
         g.setColour(slider.findColour(juce::Slider::thumbColourId));
         g.fillPath(p);
     }

@@ -9,6 +9,9 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     // Set custom LookAndFeel
     setLookAndFeel(&customLookAndFeel);
 
+    // Set knob colors to a lighter blue than the background
+    setKnobColors(juce::Colours::white, juce::Colours::lightblue, juce::Colours::black);
+
     // Add and attach new sliders
     addAndMakeVisible(predelaySlider);
     predelaySlider.setSliderStyle(juce::Slider::Rotary);
@@ -120,4 +123,9 @@ void _4kverbAudioProcessorEditor::resized()
     area = bounds.removeFromTop(sliderDiameter + labelHeight);
     depthLabel.setBounds(area.removeFromTop(labelHeight));
     depthSlider.setBounds(area.removeFromTop(sliderDiameter));
+}
+
+void _4kverbAudioProcessorEditor::setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor)
+{
+    customLookAndFeel.setKnobColors(thumbColor, fillColor, outlineColor);
 }
