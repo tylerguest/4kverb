@@ -18,6 +18,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     predelayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "predelay", predelaySlider);
     predelayLabel.setText("PreDelay", juce::dontSendNotification);
+    predelayLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(predelayLabel);
 
     addAndMakeVisible(mixSlider);
@@ -25,6 +26,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     mixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     mixAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "mix", mixSlider);
     mixLabel.setText("Mix", juce::dontSendNotification);
+    mixLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(mixLabel);
 
     addAndMakeVisible(decaySlider);
@@ -32,6 +34,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "decay", decaySlider);
     decayLabel.setText("Decay", juce::dontSendNotification);
+    decayLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(decayLabel);
 
     addAndMakeVisible(sizeSlider);
@@ -39,6 +42,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     sizeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "size", sizeSlider);
     sizeLabel.setText("Size", juce::dontSendNotification);
+    sizeLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(sizeLabel);
 
     addAndMakeVisible(highCutSlider);
@@ -46,6 +50,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     highCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     highCutAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "highCut", highCutSlider);
     highCutLabel.setText("High Cut", juce::dontSendNotification);
+    highCutLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(highCutLabel);
 
     addAndMakeVisible(lowCutSlider);
@@ -53,6 +58,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     lowCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     lowCutAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "lowCut", lowCutSlider);
     lowCutLabel.setText("Low Cut", juce::dontSendNotification);
+    lowCutLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(lowCutLabel);
 
     addAndMakeVisible(rateSlider);
@@ -60,6 +66,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     rateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "rate", rateSlider);
     rateLabel.setText("Rate", juce::dontSendNotification);
+    rateLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(rateLabel);
 
     addAndMakeVisible(depthSlider);
@@ -67,6 +74,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
     depthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "depth", depthSlider);
     depthLabel.setText("Depth", juce::dontSendNotification);
+    depthLabel.setJustificationType(juce::Justification::centred);
     addAndMakeVisible(depthLabel);
 
     setSize(400, 1000);
@@ -90,40 +98,53 @@ void _4kverbAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
     auto labelHeight = 20;
     auto sliderDiameter = 100;
+    auto labelWidth = 100; // Set a fixed width for the labels
 
-    auto area = bounds.removeFromTop(sliderDiameter + labelHeight);
+    // Calculate the total height needed for all sliders and labels
+    auto totalHeight = (sliderDiameter + labelHeight) * 8;
 
-    predelayLabel.setBounds(area.removeFromTop(labelHeight));
-    predelaySlider.setBounds(area.removeFromTop(sliderDiameter));
+    // Calculate the starting Y position to center everything vertically
+    auto startY = (bounds.getHeight() - totalHeight) / 2;
 
-    area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    mixLabel.setBounds(area.removeFromTop(labelHeight));
-    mixSlider.setBounds(area.removeFromTop(sliderDiameter));
+    auto area = bounds.removeFromTop(startY);
 
-    area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    decayLabel.setBounds(area.removeFromTop(labelHeight));
-    decaySlider.setBounds(area.removeFromTop(sliderDiameter));
+    auto centerX = bounds.getWidth() / 2;
 
     area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    sizeLabel.setBounds(area.removeFromTop(labelHeight));
-    sizeSlider.setBounds(area.removeFromTop(sliderDiameter));
+    predelayLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    predelaySlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
 
     area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    highCutLabel.setBounds(area.removeFromTop(labelHeight));
-    highCutSlider.setBounds(area.removeFromTop(sliderDiameter));
+    mixLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    mixSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
 
     area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    lowCutLabel.setBounds(area.removeFromTop(labelHeight));
-    lowCutSlider.setBounds(area.removeFromTop(sliderDiameter));
+    decayLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    decaySlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
 
     area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    rateLabel.setBounds(area.removeFromTop(labelHeight));
-    rateSlider.setBounds(area.removeFromTop(sliderDiameter));
+    sizeLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    sizeSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
 
     area = bounds.removeFromTop(sliderDiameter + labelHeight);
-    depthLabel.setBounds(area.removeFromTop(labelHeight));
-    depthSlider.setBounds(area.removeFromTop(sliderDiameter));
+    highCutLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    highCutSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
+
+    area = bounds.removeFromTop(sliderDiameter + labelHeight);
+    lowCutLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    lowCutSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
+
+    area = bounds.removeFromTop(sliderDiameter + labelHeight);
+    rateLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    rateSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
+
+    area = bounds.removeFromTop(sliderDiameter + labelHeight);
+    depthLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
+    depthSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
 }
+
+
+
 
 void _4kverbAudioProcessorEditor::setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor)
 {
