@@ -24,6 +24,12 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
     auto rw = radius * 2.0f;
     auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
 
+    // Drop shadow
+    juce::DropShadow shadow(juce::Colours::black.withAlpha(0.5f), 5, juce::Point<int>(2, 2));
+    juce::Path shadowPath;
+    shadowPath.addEllipse(rx, ry, rw, rw);
+    shadow.drawForPath(g, shadowPath);
+
     // Fill
     g.setColour(fillColor);
     g.fillEllipse(rx, ry, rw, rw);
