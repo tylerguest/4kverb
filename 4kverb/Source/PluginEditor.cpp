@@ -16,68 +16,92 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     addAndMakeVisible(predelaySlider);
     predelaySlider.setSliderStyle(juce::Slider::Rotary);
     predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    predelaySlider.setLookAndFeel(&customLookAndFeel);
     predelayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "predelay", predelaySlider);
     predelayLabel.setText("PreDelay", juce::dontSendNotification);
     predelayLabel.setJustificationType(juce::Justification::centred);
+    predelayLabel.setName("PreDelayLabel"); // Set the name
+    predelayLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(predelayLabel);
 
     addAndMakeVisible(mixSlider);
     mixSlider.setSliderStyle(juce::Slider::Rotary);
     mixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    mixSlider.setLookAndFeel(&customLookAndFeel);
     mixAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "mix", mixSlider);
     mixLabel.setText("Mix", juce::dontSendNotification);
     mixLabel.setJustificationType(juce::Justification::centred);
+    mixLabel.setName("MixLabel"); // Set the name
+    mixLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(mixLabel);
 
     addAndMakeVisible(decaySlider);
     decaySlider.setSliderStyle(juce::Slider::Rotary);
     decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    decaySlider.setLookAndFeel(&customLookAndFeel);
     decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "decay", decaySlider);
     decayLabel.setText("Decay", juce::dontSendNotification);
     decayLabel.setJustificationType(juce::Justification::centred);
+    decayLabel.setName("DecayLabel"); // Set the name
+    decayLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(decayLabel);
 
     addAndMakeVisible(sizeSlider);
     sizeSlider.setSliderStyle(juce::Slider::Rotary);
     sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    sizeSlider.setLookAndFeel(&customLookAndFeel);
     sizeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "size", sizeSlider);
     sizeLabel.setText("Size", juce::dontSendNotification);
     sizeLabel.setJustificationType(juce::Justification::centred);
+    sizeLabel.setName("SizeLabel"); // Set the name
+    sizeLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(sizeLabel);
 
     addAndMakeVisible(highCutSlider);
     highCutSlider.setSliderStyle(juce::Slider::Rotary);
     highCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    highCutSlider.setLookAndFeel(&customLookAndFeel);
     highCutAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "highCut", highCutSlider);
     highCutLabel.setText("High Cut", juce::dontSendNotification);
     highCutLabel.setJustificationType(juce::Justification::centred);
+    highCutLabel.setName("HighCutLabel"); // Set the name
+    highCutLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(highCutLabel);
 
     addAndMakeVisible(lowCutSlider);
     lowCutSlider.setSliderStyle(juce::Slider::Rotary);
     lowCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    lowCutSlider.setLookAndFeel(&customLookAndFeel);
     lowCutAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "lowCut", lowCutSlider);
     lowCutLabel.setText("Low Cut", juce::dontSendNotification);
     lowCutLabel.setJustificationType(juce::Justification::centred);
+    lowCutLabel.setName("LowCutLabel"); // Set the name
+    lowCutLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(lowCutLabel);
 
     addAndMakeVisible(rateSlider);
     rateSlider.setSliderStyle(juce::Slider::Rotary);
     rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    rateSlider.setLookAndFeel(&customLookAndFeel);
     rateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "rate", rateSlider);
     rateLabel.setText("Rate", juce::dontSendNotification);
     rateLabel.setJustificationType(juce::Justification::centred);
+    rateLabel.setName("RateLabel"); // Set the name
+    rateLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(rateLabel);
 
     addAndMakeVisible(depthSlider);
     depthSlider.setSliderStyle(juce::Slider::Rotary);
     depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    depthSlider.setLookAndFeel(&customLookAndFeel);
     depthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "depth", depthSlider);
     depthLabel.setText("Depth", juce::dontSendNotification);
     depthLabel.setJustificationType(juce::Justification::centred);
+    depthLabel.setName("DepthLabel"); // Set the name
+    depthLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     addAndMakeVisible(depthLabel);
 
-    setSize(400, 1000);
+    setSize(200, 1000);
 }
 
 _4kverbAudioProcessorEditor::~_4kverbAudioProcessorEditor()
@@ -142,9 +166,6 @@ void _4kverbAudioProcessorEditor::resized()
     depthLabel.setBounds(centerX - labelWidth / 2, area.getY(), labelWidth, labelHeight);
     depthSlider.setBounds(centerX - sliderDiameter / 2, area.getY() + labelHeight, sliderDiameter, sliderDiameter);
 }
-
-
-
 
 void _4kverbAudioProcessorEditor::setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor)
 {
