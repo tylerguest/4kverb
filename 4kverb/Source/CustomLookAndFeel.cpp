@@ -36,16 +36,16 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 
     // Outline
     g.setColour(outlineColor);
-    g.drawEllipse(rx, ry, rw, rw, 1.0f);
+    g.drawEllipse(rx, ry, rw, rw, 4.0f); // Set outline thickness to match the notch
 
     juce::Path p;
     auto pointerLength = radius * 0.33f;
-    auto pointerThickness = 2.0f;
+    auto pointerThickness = 4.0f; // Increased thickness
     p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
     p.applyTransform(juce::AffineTransform::rotation(angle).translated(centerX, centerY));
 
-    // Thumb
-    g.setColour(thumbColor);
+    // Thumb (notch)
+    g.setColour(juce::Colours::black); // Set color to black
     g.fillPath(p);
 }
 
@@ -53,17 +53,13 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
 {
     g.setColour(label.findColour(juce::Label::textColourId));
 
-    // Check if the label is a descriptive label for a slider
-    if (label.getName().contains("Label"))
-    {
-        // Set the font to bold for slider descriptive labels
-        g.setFont(label.getFont().boldened());
-    }
-    else
-    {
-        g.setFont(label.getFont());
-    }
+    // Set the font to a more readable bold font
+    juce::Font font("Arial Black", label.getFont().getHeight(), juce::Font::bold);
+    g.setFont(font);
+
+    // Convert the label text to uppercase
+    juce::String text = label.getText().toUpperCase();
 
     auto textArea = label.getLocalBounds();
-    g.drawFittedText(label.getText(), textArea, juce::Justification::centred, 1);
+    g.drawFittedText(text, textArea, juce::Justification::centred, 1);
 }

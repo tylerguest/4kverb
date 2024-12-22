@@ -10,7 +10,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     setLookAndFeel(&customLookAndFeel);
 
     // Set knob colors to a lighter blue than the background
-    setKnobColors(juce::Colours::white, juce::Colours::lightblue, juce::Colours::black);
+    setKnobColors(juce::Colours::white, juce::Colour(0xff87cefa), juce::Colours::black); // Light blue for sliders
 
     // Add and attach new sliders
     addAndMakeVisible(predelaySlider);
@@ -22,6 +22,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     predelayLabel.setJustificationType(juce::Justification::centred);
     predelayLabel.setName("PreDelayLabel"); // Set the name
     predelayLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    predelayLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(predelayLabel);
 
     addAndMakeVisible(mixSlider);
@@ -33,6 +34,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     mixLabel.setJustificationType(juce::Justification::centred);
     mixLabel.setName("MixLabel"); // Set the name
     mixLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    mixLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(mixLabel);
 
     addAndMakeVisible(decaySlider);
@@ -44,6 +46,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     decayLabel.setJustificationType(juce::Justification::centred);
     decayLabel.setName("DecayLabel"); // Set the name
     decayLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    decayLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(decayLabel);
 
     addAndMakeVisible(sizeSlider);
@@ -55,6 +58,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     sizeLabel.setJustificationType(juce::Justification::centred);
     sizeLabel.setName("SizeLabel"); // Set the name
     sizeLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    sizeLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(sizeLabel);
 
     addAndMakeVisible(highCutSlider);
@@ -66,6 +70,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     highCutLabel.setJustificationType(juce::Justification::centred);
     highCutLabel.setName("HighCutLabel"); // Set the name
     highCutLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    highCutLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(highCutLabel);
 
     addAndMakeVisible(lowCutSlider);
@@ -77,6 +82,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     lowCutLabel.setJustificationType(juce::Justification::centred);
     lowCutLabel.setName("LowCutLabel"); // Set the name
     lowCutLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    lowCutLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(lowCutLabel);
 
     addAndMakeVisible(rateSlider);
@@ -88,6 +94,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     rateLabel.setJustificationType(juce::Justification::centred);
     rateLabel.setName("RateLabel"); // Set the name
     rateLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    rateLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(rateLabel);
 
     addAndMakeVisible(depthSlider);
@@ -99,6 +106,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     depthLabel.setJustificationType(juce::Justification::centred);
     depthLabel.setName("DepthLabel"); // Set the name
     depthLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
+    depthLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(depthLabel);
 
     setSize(200, 1000);
@@ -112,9 +120,9 @@ _4kverbAudioProcessorEditor::~_4kverbAudioProcessorEditor()
 //==============================================================================
 void _4kverbAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colours::lightblue);
+    g.fillAll(juce::Colour(0xff4682b4)); // Slightly darker blue than the slider
     g.setColour(juce::Colours::black);
-    g.setFont(15.0f);
+    g.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
 }
 
 void _4kverbAudioProcessorEditor::resized()
