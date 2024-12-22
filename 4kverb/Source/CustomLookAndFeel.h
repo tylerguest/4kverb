@@ -18,4 +18,19 @@ private:
     juce::Colour thumbColor;
     juce::Colour fillColor;
     juce::Colour outlineColor;
+
+    std::unique_ptr<juce::Typeface> robotoTypeface;
+};
+
+class CustomSlider : public juce::Slider
+{
+public:
+    CustomSlider() = default;
+
+    juce::String getTextFromValue(double value) override
+    {
+        if (getName() == "HighCut")
+            return juce::String(value / 1000.0, 1) + " kHz";
+        return juce::Slider::getTextFromValue(value);
+    }
 };

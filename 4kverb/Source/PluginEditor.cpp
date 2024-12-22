@@ -12,16 +12,22 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     // Set knob colors to white
     setKnobColors(juce::Colours::black, juce::Colours::white, juce::Colours::black);
 
-    // Add and attach new sliders
+    // PluginEditor.cpp
+
+// Add and attach new sliders
+// PluginEditor.cpp
+
+// Add and attach new sliders
     addAndMakeVisible(predelaySlider);
     predelaySlider.setSliderStyle(juce::Slider::Rotary);
-    predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     predelaySlider.setRange(0.0, 500.0, 1.0); // Set interval to 1.0 for easier selection
     predelaySlider.setValue(20.0f); // Set default value
     predelaySlider.setLookAndFeel(&customLookAndFeel);
     predelaySlider.addListener(this); // Add listener
     predelaySlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     predelaySlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    predelaySlider.setTextValueSuffix(" ms"); // Add suffix
     predelayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "predelay", predelaySlider);
     predelayLabel.setText("PreDelay", juce::dontSendNotification);
     predelayLabel.setJustificationType(juce::Justification::centred);
@@ -32,13 +38,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(mixSlider);
     mixSlider.setSliderStyle(juce::Slider::Rotary);
-    mixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    mixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     mixSlider.setRange(0.0, 1.0, 0.01); // Set interval to 0.01 for easier selection
     mixSlider.setValue(1.0f); // Set default value
     mixSlider.setLookAndFeel(&customLookAndFeel);
     mixSlider.addListener(this); // Add listener
     mixSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     mixSlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    mixSlider.setTextValueSuffix(" %"); // Add suffix
     mixAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "mix", mixSlider);
     mixLabel.setText("Mix", juce::dontSendNotification);
     mixLabel.setJustificationType(juce::Justification::centred);
@@ -49,13 +56,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(decaySlider);
     decaySlider.setSliderStyle(juce::Slider::Rotary);
-    decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     decaySlider.setRange(0.2, 70.0, 0.1); // Set interval to 0.1 for easier selection
     decaySlider.setValue(4.0f); // Set default value
     decaySlider.setLookAndFeel(&customLookAndFeel);
     decaySlider.addListener(this); // Add listener
     decaySlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     decaySlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    decaySlider.setTextValueSuffix(" s"); // Add suffix
     decayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "decay", decaySlider);
     decayLabel.setText("Decay", juce::dontSendNotification);
     decayLabel.setJustificationType(juce::Justification::centred);
@@ -66,13 +74,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(sizeSlider);
     sizeSlider.setSliderStyle(juce::Slider::Rotary);
-    sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     sizeSlider.setRange(0.0, 1.0, 0.01); // Set interval to 0.01 for easier selection
     sizeSlider.setValue(0.5f); // Set default value
     sizeSlider.setLookAndFeel(&customLookAndFeel);
     sizeSlider.addListener(this); // Add listener
     sizeSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     sizeSlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    sizeSlider.setTextValueSuffix(" %"); // Add suffix
     sizeAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "size", sizeSlider);
     sizeLabel.setText("Size", juce::dontSendNotification);
     sizeLabel.setJustificationType(juce::Justification::centred);
@@ -83,13 +92,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(highCutSlider);
     highCutSlider.setSliderStyle(juce::Slider::Rotary);
-    highCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    highCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     highCutSlider.setRange(1000.0, 21000.0, 100.0); // Set interval to 100.0 for easier selection
     highCutSlider.setValue(8000.0f); // Set default value
     highCutSlider.setLookAndFeel(&customLookAndFeel);
     highCutSlider.addListener(this); // Add listener
     highCutSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     highCutSlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    highCutSlider.setName("HighCut"); // Set the name to identify the slider
     highCutAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "highCut", highCutSlider);
     highCutLabel.setText("High Cut", juce::dontSendNotification);
     highCutLabel.setJustificationType(juce::Justification::centred);
@@ -100,13 +110,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(lowCutSlider);
     lowCutSlider.setSliderStyle(juce::Slider::Rotary);
-    lowCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    lowCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     lowCutSlider.setRange(10.0, 500.0, 10.0); // Set interval to 10.0 for easier selection
     lowCutSlider.setValue(10.0f); // Set default value
     lowCutSlider.setLookAndFeel(&customLookAndFeel);
     lowCutSlider.addListener(this); // Add listener
     lowCutSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     lowCutSlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    lowCutSlider.setTextValueSuffix(" Hz"); // Add suffix
     lowCutAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "lowCut", lowCutSlider);
     lowCutLabel.setText("Low Cut", juce::dontSendNotification);
     lowCutLabel.setJustificationType(juce::Justification::centred);
@@ -117,13 +128,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(rateSlider);
     rateSlider.setSliderStyle(juce::Slider::Rotary);
-    rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     rateSlider.setRange(0.1, 10.0, 0.1); // Set interval to 0.1 for easier selection
     rateSlider.setValue(1.0f); // Set default value
     rateSlider.setLookAndFeel(&customLookAndFeel);
     rateSlider.addListener(this); // Add listener
     rateSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     rateSlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    rateSlider.setTextValueSuffix(" Hz"); // Add suffix
     rateAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "rate", rateSlider);
     rateLabel.setText("Rate", juce::dontSendNotification);
     rateLabel.setJustificationType(juce::Justification::centred);
@@ -134,13 +146,14 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(depthSlider);
     depthSlider.setSliderStyle(juce::Slider::Rotary);
-    depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
     depthSlider.setRange(0.0, 100.0, 1.0); // Set interval to 1.0 for easier selection
     depthSlider.setValue(50.0f); // Set default value
     depthSlider.setLookAndFeel(&customLookAndFeel);
     depthSlider.addListener(this); // Add listener
     depthSlider.setColour(juce::Slider::textBoxTextColourId, juce::Colours::black); // Set text color to black
     depthSlider.setSliderSnapsToMousePosition(false); // Prevent jumping to click position
+    depthSlider.setTextValueSuffix(" %"); // Add suffix
     depthAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.getParameters(), "depth", depthSlider);
     depthLabel.setText("Depth", juce::dontSendNotification);
     depthLabel.setJustificationType(juce::Justification::centred);
@@ -149,12 +162,23 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     depthLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(depthLabel);
 
+
+    // Initialize background colors
+    currentBackgroundColor = juce::Colours::white; // Starting background color
+    targetBackgroundColor = currentBackgroundColor;
+    colorTransitionSteps = 0;
+    currentTransitionStep = 0;
+
+    // Start the timer with an interval (e.g., 30 milliseconds)
+    startTimer(30);
+
     setSize(200, 1000);
 }
 
 _4kverbAudioProcessorEditor::~_4kverbAudioProcessorEditor()
 {
     setLookAndFeel(nullptr);
+    stopTimer();
 }
 
 //==============================================================================
@@ -224,6 +248,27 @@ void _4kverbAudioProcessorEditor::setKnobColors(juce::Colour thumbColor, juce::C
 
 void _4kverbAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
+    // Calculate a target color based on the slider values
+    float predelayValue = predelaySlider.getValue();
+    float mixValue = mixSlider.getValue();
+    float decayValue = decaySlider.getValue();
+    float sizeValue = sizeSlider.getValue();
+    float highCutValue = highCutSlider.getValue();
+    float lowCutValue = lowCutSlider.getValue();
+    float rateValue = rateSlider.getValue();
+    float depthValue = depthSlider.getValue();
+
+    // Combine the values to create a target color
+    float red = (predelayValue / 500.0f + mixValue + decayValue / 70.0f) / 3.0f;
+    float green = (sizeValue + highCutValue / 21000.0f + lowCutValue / 500.0f) / 3.0f;
+    float blue = (rateValue / 10.0f + depthValue / 100.0f) / 2.0f;
+
+    targetBackgroundColor = juce::Colour::fromFloatRGBA(red, green, blue, 1.0f);
+
+    // Set up the transition
+    colorTransitionSteps = 20; // Number of steps in the transition
+    currentTransitionStep = 0;
+
     repaint(); // Repaint the background when a slider value changes
 }
 
@@ -239,17 +284,51 @@ juce::Colour _4kverbAudioProcessorEditor::getBackgroundColor()
     float rateValue = rateSlider.getValue();
     float depthValue = depthSlider.getValue();
 
-    // If all sliders are at their default positions, return white
-    if (predelayValue == 20.0f && mixValue == 1.0f && decayValue == 4.0f && sizeValue == 0.5f &&
-        highCutValue == 8000.0f && lowCutValue == 10.0f && rateValue == 1.0f && depthValue == 50.0f)
-    {
-        return juce::Colours::white;
-    }
-
     // Combine the values to create a color
     float red = (predelayValue / 500.0f + mixValue + decayValue / 70.0f) / 3.0f;
     float green = (sizeValue + highCutValue / 21000.0f + lowCutValue / 500.0f) / 3.0f;
     float blue = (rateValue / 10.0f + depthValue / 100.0f) / 2.0f;
 
     return juce::Colour::fromFloatRGBA(red, green, blue, 1.0f);
+}
+
+void _4kverbAudioProcessorEditor::timerCallback()
+{
+    if (colorTransitionSteps > 0)
+    {
+        float alpha = (float)currentTransitionStep / (float)colorTransitionSteps;
+
+        // Interpolate between the current and target colors
+        juce::Colour newColor = currentBackgroundColor.interpolatedWith(targetBackgroundColor, alpha);
+
+        // Update the current background color
+        currentBackgroundColor = newColor;
+
+        // Increment the transition step
+        ++currentTransitionStep;
+
+        // Repaint the editor
+        repaint();
+
+        // Check if the transition is complete
+        if (currentTransitionStep >= colorTransitionSteps)
+        {
+            // Finalize the color
+            currentBackgroundColor = targetBackgroundColor;
+            colorTransitionSteps = 0;
+            currentTransitionStep = 0;
+        }
+    }
+
+    // Get the audio level from the processor
+    float audioLevel = audioProcessor.getAudioLevel();
+
+    // Map the audio level to a brightness value (0.0 to 1.0)
+    float brightness = juce::jmap(audioLevel, 0.0f, 1.0f, 0.0f, 1.0f);
+
+    // Update the background color based on the audio level
+    currentBackgroundColor = juce::Colour::fromHSV(currentBackgroundColor.getHue(), currentBackgroundColor.getSaturation(), brightness, 1.0f);
+
+    // Repaint the editor
+    repaint();
 }

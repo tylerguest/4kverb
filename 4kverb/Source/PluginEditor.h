@@ -7,7 +7,7 @@
 //==============================================================================
 /**
 */
-class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener
+class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::Timer
 {
 public:
     _4kverbAudioProcessorEditor(_4kverbAudioProcessor&);
@@ -21,6 +21,9 @@ public:
 
     // Implement the sliderValueChanged method
     void sliderValueChanged(juce::Slider* slider) override;
+
+    // Override timerCallback
+    void timerCallback() override; // Add this
 
 private:
     _4kverbAudioProcessor& audioProcessor;
@@ -43,7 +46,7 @@ private:
     juce::Label sizeLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> sizeAttachment;
 
-    juce::Slider highCutSlider;
+    CustomSlider highCutSlider;
     juce::Label highCutLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> highCutAttachment;
 
@@ -61,6 +64,12 @@ private:
 
     // Add the getBackgroundColor method declaration
     juce::Colour getBackgroundColor();
+
+    // Add these variables for color transition
+    juce::Colour currentBackgroundColor;
+    juce::Colour targetBackgroundColor;
+    int colorTransitionSteps;
+    int currentTransitionStep;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(_4kverbAudioProcessorEditor)
 };

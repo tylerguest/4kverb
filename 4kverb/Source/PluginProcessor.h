@@ -49,6 +49,8 @@ public:
     // Provide a getter method for parameters
     juce::AudioProcessorValueTreeState& getParameters();
 
+    float getAudioLevel() const { return audioLevel.load(); }
+
 private:
     //==============================================================================
     juce::AudioProcessorValueTreeState parameters;
@@ -67,6 +69,8 @@ private:
 
     // In your plugin processor class
     std::vector<juce::dsp::DelayLine<float>> predelayLines;
+
+    std::atomic<float> audioLevel{ 0.0f };
 
 
     float modulationDepth = 0.5f;

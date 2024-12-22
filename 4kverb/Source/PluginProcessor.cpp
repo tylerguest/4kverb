@@ -315,6 +315,20 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
             dryData[sample] = dryData[sample] * reverbParams.dryLevel + wetData[sample] * reverbParams.wetLevel;
         }
     }
+
+    // Calculate the audio level
+    float currentLevel = 0.0f;
+    for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
+    {
+        currentLevel += buffer.getRMSLevel(channel, 0, buffer.getNumSamples());
+    }
+    currentLevel /= static_cast<float>(buffer.getNumChannels());
+
+    // Store the audio level
+    audioLevel.store(currentLevel);
+
+    // Debug statement
+    DBG("Audio Level: " << currentLevel);
 }
 
 
