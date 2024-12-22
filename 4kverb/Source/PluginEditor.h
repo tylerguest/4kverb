@@ -7,7 +7,7 @@
 //==============================================================================
 /**
 */
-class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor
+class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener
 {
 public:
     _4kverbAudioProcessorEditor(_4kverbAudioProcessor&);
@@ -18,6 +18,9 @@ public:
     void resized() override;
 
     void setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor);
+
+    // Implement the sliderValueChanged method
+    void sliderValueChanged(juce::Slider* slider) override;
 
 private:
     _4kverbAudioProcessor& audioProcessor;
@@ -56,5 +59,9 @@ private:
     juce::Label depthLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
 
+    // Add the getBackgroundColor method declaration
+    juce::Colour getBackgroundColor();
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(_4kverbAudioProcessorEditor)
 };
+

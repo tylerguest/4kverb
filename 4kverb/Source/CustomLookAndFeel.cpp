@@ -15,14 +15,15 @@ void CustomLookAndFeel::setKnobColors(juce::Colour thumbColor, juce::Colour fill
 void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
     float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider)
 {
-    // Custom drawing code for rotary sliders
     auto radius = (float)juce::jmin(width / 2, height / 2) - 4.0f;
     auto centerX = (float)x + (float)width * 0.5f;
     auto centerY = (float)y + (float)height * 0.5f;
     auto rx = centerX - radius;
     auto ry = centerY - radius;
     auto rw = radius * 2.0f;
-    auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
+
+    // Correct the angle calculation
+    auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle) - juce::MathConstants<float>::halfPi;
 
     // Drop shadow
     juce::DropShadow shadow(juce::Colours::black.withAlpha(0.5f), 5, juce::Point<int>(2, 2));
@@ -36,18 +37,22 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
 
     // Outline
     g.setColour(outlineColor);
-    g.drawEllipse(rx, ry, rw, rw, 4.0f); // Set outline thickness to match the notch
+    g.drawEllipse(rx, ry, rw, rw, 2.0f); // Set outline thickness to 2.0f
 
-    juce::Path p;
-    auto pointerLength = radius * 0.33f;
-    auto pointerThickness = 4.0f; // Increased thickness
-    p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
-    p.applyTransform(juce::AffineTransform::rotation(angle).translated(centerX, centerY));
+    // Thumb (notch) as a line
+    auto thumbWidth = 6.0f; // Increased thumb width
+    auto thumbLength = radius * 0.7f; // Set thumb length to 70% of the main radius
 
-    // Thumb (notch)
-    g.setColour(juce::Colours::black); // Set color to black
-    g.fillPath(p);
+    // Calculate the thumb positions
+    auto thumbX1 = centerX + thumbLength * std::cos(angle);
+    auto thumbY1 = centerY + thumbLength * std::sin(angle);
+    auto thumbX2 = centerX;
+    auto thumbY2 = centerY;
+
+    g.setColour(thumbColor); // Set color to thumbColor
+    g.drawLine(thumbX1, thumbY1, thumbX2, thumbY2, thumbWidth);
 }
+
 
 void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
 {
