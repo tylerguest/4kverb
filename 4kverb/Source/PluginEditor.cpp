@@ -20,7 +20,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 // Add and attach new sliders
     addAndMakeVisible(predelaySlider);
     predelaySlider.setSliderStyle(juce::Slider::Rotary);
-    predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     predelaySlider.setRange(0.0, 500.0, 1.0); // Set interval to 1.0 for easier selection
     predelaySlider.setValue(20.0f); // Set default value
     predelaySlider.setLookAndFeel(&customLookAndFeel);
@@ -38,7 +38,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(mixSlider);
     mixSlider.setSliderStyle(juce::Slider::Rotary);
-    mixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    mixSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     mixSlider.setRange(0.0, 1.0, 0.01); // Set interval to 0.01 for easier selection
     mixSlider.setValue(1.0f); // Set default value
     mixSlider.setLookAndFeel(&customLookAndFeel);
@@ -56,7 +56,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(decaySlider);
     decaySlider.setSliderStyle(juce::Slider::Rotary);
-    decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    decaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     decaySlider.setRange(0.2, 70.0, 0.1); // Set interval to 0.1 for easier selection
     decaySlider.setValue(4.0f); // Set default value
     decaySlider.setLookAndFeel(&customLookAndFeel);
@@ -74,7 +74,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(sizeSlider);
     sizeSlider.setSliderStyle(juce::Slider::Rotary);
-    sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    sizeSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     sizeSlider.setRange(0.0, 1.0, 0.01); // Set interval to 0.01 for easier selection
     sizeSlider.setValue(0.5f); // Set default value
     sizeSlider.setLookAndFeel(&customLookAndFeel);
@@ -92,7 +92,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(highCutSlider);
     highCutSlider.setSliderStyle(juce::Slider::Rotary);
-    highCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    highCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     highCutSlider.setRange(1000.0, 21000.0, 100.0); // Set interval to 100.0 for easier selection
     highCutSlider.setValue(8000.0f); // Set default value
     highCutSlider.setLookAndFeel(&customLookAndFeel);
@@ -110,7 +110,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(lowCutSlider);
     lowCutSlider.setSliderStyle(juce::Slider::Rotary);
-    lowCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    lowCutSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     lowCutSlider.setRange(10.0, 500.0, 10.0); // Set interval to 10.0 for easier selection
     lowCutSlider.setValue(10.0f); // Set default value
     lowCutSlider.setLookAndFeel(&customLookAndFeel);
@@ -128,7 +128,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(rateSlider);
     rateSlider.setSliderStyle(juce::Slider::Rotary);
-    rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    rateSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     rateSlider.setRange(0.1, 10.0, 0.1); // Set interval to 0.1 for easier selection
     rateSlider.setValue(1.0f); // Set default value
     rateSlider.setLookAndFeel(&customLookAndFeel);
@@ -146,7 +146,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     addAndMakeVisible(depthSlider);
     depthSlider.setSliderStyle(juce::Slider::Rotary);
-    depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20); // Adjust text box width
+    depthSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
     depthSlider.setRange(0.0, 100.0, 1.0); // Set interval to 1.0 for easier selection
     depthSlider.setValue(50.0f); // Set default value
     depthSlider.setLookAndFeel(&customLookAndFeel);
@@ -161,6 +161,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     depthLabel.setColour(juce::Label::textColourId, juce::Colours::black); // Set text color to black
     depthLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(depthLabel);
+
 
 
     // Initialize background colors
