@@ -14,6 +14,12 @@ public:
 
     void drawLabel(juce::Graphics& g, juce::Label& label) override;
 
+    // Add this method declaration
+    juce::Font getMenuBarFont(juce::MenuBarComponent& menuBar, int itemIndex, const juce::String& itemText) override;
+
+    // Add this method declaration
+    float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent& menuBar, juce::MenuBarModel& menuBarModel);
+
 private:
     juce::Colour thumbColor;
     juce::Colour fillColor;

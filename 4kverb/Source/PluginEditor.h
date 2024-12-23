@@ -28,7 +28,9 @@ public:
     // Override timerCallback
     void timerCallback() override; // Add this
 
+    // With this line:
     juce::StringArray getMenuBarNames() override;
+
     juce::PopupMenu getMenuForIndex(int menuIndex, const juce::String& menuName) override;
     void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
 
@@ -72,6 +74,7 @@ private:
     std::unique_ptr<juce::FileChooser> fileChooser;
 
 
+
     // Add the getBackgroundColor method declaration
     juce::Colour getBackgroundColor();
 
@@ -93,7 +96,8 @@ private:
         preset1ID = 100,
         preset2ID,
         preset3ID,
-        customPresetBaseID = 1000 // Base ID for custom presets
+        customPresetBaseID = 1000, // Base ID for custom presets
+        sizeID = 2000
     };
 
 

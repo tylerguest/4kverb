@@ -70,3 +70,41 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
     auto textArea = label.getLocalBounds();
     g.drawFittedText(text, textArea, juce::Justification::centred, 1);
 }
+
+juce::Font CustomLookAndFeel::getMenuBarFont(juce::MenuBarComponent& menuBar, int itemIndex, const juce::String& itemText)
+{
+    if (auto* menuBarModel = menuBar.getModel())
+    {
+        float fontSize = calculateMenuBarFontSize(menuBar, *menuBarModel);
+        return juce::Font(juce::Font::getDefaultSansSerifFontName(), fontSize, juce::Font::plain);
+    }
+    return juce::Font(juce::Font::getDefaultSansSerifFontName(), 12.0f, juce::Font::plain); // Fallback font size
+}
+
+// Replace the entire function with the following:
+
+float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent& menuBar, juce::MenuBarModel& menuBarModel)
+{
+    auto menuBarNames = menuBarModel.getMenuBarNames();
+    auto totalAvailableWidth = static_cast<float>(menuBar.getWidth()) - (menuBarNames.size() * 20.0f); // Adjust for padding
+    float fontSize = 16.0f; // Start with a default font size
+    juce::Font font(juce::Font::getDefaultSansSerifFontName(), fontSize, juce::Font::plain);
+
+    float totalRequiredWidth = 0.0f;
+
+    for (const auto& menuName : menuBarNames)
+        totalRequiredWidth += font.getStringWidth(menuName) + 10.0f; // Adjust for padding
+
+    while (totalRequiredWidth > totalAvailableWidth && fontSize > 10.0f)
+    {
+        fontSize -= 0.5f;
+        font.setHeight(fontSize);
+        totalRequiredWidth = 0.0f;
+
+        for (const auto& menuName : menuBarNames)
+            totalRequiredWidth += font.getStringWidth(menuName) + 20.0f; // Adjust for padding
+    }
+
+    return fontSize;
+}
+

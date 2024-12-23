@@ -16,6 +16,8 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
 
     // Add the following lines to the constructor
     menuBar = std::make_unique<juce::MenuBarComponent>(this);
+    menuBar->setLookAndFeel(&customLookAndFeel);
+    menuBar->setModel(this);
     addAndMakeVisible(menuBar.get());
 
     loadCustomPresetsFromDirectory();
@@ -174,7 +176,7 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     // Start the timer with an interval (e.g., 30 milliseconds)
     startTimer(30);
 
-    setSize(200, 1000);
+    setSize(125, 1000);
 }
 
 _4kverbAudioProcessorEditor::~_4kverbAudioProcessorEditor()
@@ -450,6 +452,14 @@ juce::PopupMenu _4kverbAudioProcessorEditor::getMenuForIndex(int menuIndex, cons
         menu.addSeparator();
         menu.addSubMenu("Custom Presets", customPresetsMenu); // Add this line
     }
+    else if (menuName == "Size")
+    {
+        menu.addItem(MenuIDs::sizeID, "75%");
+        menu.addItem(MenuIDs::sizeID, "100%");
+        menu.addItem(MenuIDs::sizeID, "125%");
+        menu.addItem(MenuIDs::sizeID, "150%");
+        menu.addItem(MenuIDs::sizeID, "200%");
+    }
 
     return menu;
 }
@@ -458,8 +468,9 @@ juce::PopupMenu _4kverbAudioProcessorEditor::getMenuForIndex(int menuIndex, cons
 
 juce::StringArray _4kverbAudioProcessorEditor::getMenuBarNames()
 {
-    return { "File", "Presets" };
+    return { "File", "Presets", "Size" };
 }
+
 
 void _4kverbAudioProcessorEditor::menuItemSelected(int menuItemID, int topLevelMenuIndex)
 {
