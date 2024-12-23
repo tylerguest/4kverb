@@ -37,6 +37,14 @@ _4kverbAudioProcessor::~_4kverbAudioProcessor()
 }
 
 //==============================================================================
+juce::File _4kverbAudioProcessor::getDefaultPresetDirectory() const
+{
+    auto presetDirectory = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("4kverbPresets");
+    if (!presetDirectory.exists())
+        presetDirectory.createDirectory();
+    return presetDirectory;
+}
+
 const juce::String _4kverbAudioProcessor::getName() const
 {
     return JucePlugin_Name;

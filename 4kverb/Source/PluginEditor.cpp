@@ -18,6 +18,8 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     menuBar = std::make_unique<juce::MenuBarComponent>(this);
     addAndMakeVisible(menuBar.get());
 
+    loadCustomPresetsFromDirectory();
+
     // Add and attach new sliders
     addAndMakeVisible(predelaySlider);
     predelaySlider.setSliderStyle(juce::Slider::Rotary);
@@ -394,7 +396,8 @@ void _4kverbAudioProcessorEditor::loadPreset()
 void _4kverbAudioProcessorEditor::savePreset()
 {
     DBG("savePreset called");
-    fileChooser = std::make_unique<juce::FileChooser>("Save preset as...", juce::File::getSpecialLocation(juce::File::userDocumentsDirectory), "*.preset");
+    auto defaultPresetDirectory = audioProcessor.getDefaultPresetDirectory();
+    fileChooser = std::make_unique<juce::FileChooser>("Save preset as...", defaultPresetDirectory, "*.preset");
 
     fileChooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
         [this](const juce::FileChooser& fc)
@@ -437,16 +440,21 @@ juce::PopupMenu _4kverbAudioProcessorEditor::getMenuForIndex(int menuIndex, cons
     {
         menu.addItem(_4kverbAudioProcessorEditor::MenuIDs::loadPresetID, "Load Preset");
         menu.addItem(_4kverbAudioProcessorEditor::MenuIDs::savePresetID, "Save Preset");
+        menu.addItem(_4kverbAudioProcessorEditor::MenuIDs::putIntoPresetMenuID, "Put into Preset Menu as..."); // Add this line
     }
     else if (menuName == "Presets")
     {
         menu.addItem(PresetIDs::preset1, "Preset 1");
         menu.addItem(PresetIDs::preset2, "Preset 2");
         menu.addItem(PresetIDs::preset3, "Preset 3");
+        menu.addSeparator();
+        menu.addSubMenu("Custom Presets", customPresetsMenu); // Add this line
     }
 
     return menu;
 }
+
+
 
 juce::StringArray _4kverbAudioProcessorEditor::getMenuBarNames()
 {
@@ -464,6 +472,10 @@ void _4kverbAudioProcessorEditor::menuItemSelected(int menuItemID, int topLevelM
     case MenuIDs::savePresetID:
         DBG("Save Preset menu item selected");
         savePreset();
+        break;
+    case MenuIDs::putIntoPresetMenuID:
+        DBG("Put into Preset Menu as... menu item selected");
+        putIntoPresetMenuAs();
         break;
     case PresetIDs::preset1:
         // Apply settings for preset 1
@@ -496,6 +508,89 @@ void _4kverbAudioProcessorEditor::menuItemSelected(int menuItemID, int topLevelM
         depthSlider.setValue(50.0f);
         break;
     default:
+        if (menuItemID >= MenuIDs::customPresetBaseID)
+        {
+            // Load custom preset
+            loadCustomPreset(menuItemID);
+        }
         break;
+    }
+}
+
+void _4kverbAudioProcessorEditor::putIntoPresetMenuAs()
+{
+    auto defaultPresetDirectory = audioProcessor.getDefaultPresetDirectory();
+    fileChooser = std::make_unique<juce::FileChooser>("Save preset as...", defaultPresetDirectory, "*.preset");
+
+    fileChooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+        [this](const juce::FileChooser& fc)
+        {
+            auto file = fc.getResult();
+            if (file != juce::File{}) // Check if a file was selected
+            {
+                DBG("File selected: " + file.getFullPathName());
+                juce::MemoryBlock data;
+                audioProcessor.getStateInformation(data);
+                auto result = file.replaceWithData(data.getData(), data.getSize());
+                if (result)
+                {
+                    DBG("Preset saved to file: " + file.getFullPathName());
+                    addCustomPresetToMenu(file.getFileNameWithoutExtension(), file.getFullPathName());
+                }
+                else
+                {
+                    DBG("Failed to save preset to file: " + file.getFullPathName());
+                }
+            }
+            else
+            {
+                DBG("No file selected");
+            }
+
+            // Reset the fileChooser to allow future operations
+            fileChooser.reset();
+        });
+}
+
+void _4kverbAudioProcessorEditor::addCustomPresetToMenu(const juce::String& presetName, const juce::String& presetPath)
+{
+    if (!customPresets.contains(presetPath))
+    {
+        customPresets.add(presetPath);
+        int presetID = MenuIDs::customPresetBaseID + customPresets.size() - 1;
+        customPresetsMenu.addItem(presetID, presetName);
+    }
+}
+
+void _4kverbAudioProcessorEditor::loadCustomPreset(int presetID)
+{
+    int index = presetID - MenuIDs::customPresetBaseID;
+    if (index >= 0 && index < customPresets.size())
+    {
+        juce::File file(customPresets[index]);
+        if (file.existsAsFile())
+        {
+            juce::FileInputStream inputStream(file);
+            if (inputStream.openedOk())
+            {
+                juce::MemoryBlock data;
+                inputStream.readIntoMemoryBlock(data);
+                audioProcessor.setStateInformation(data.getData(), static_cast<int>(data.getSize()));
+                DBG("Custom preset loaded from file: " + file.getFullPathName());
+            }
+        }
+    }
+}
+
+void _4kverbAudioProcessorEditor::loadCustomPresetsFromDirectory()
+{
+    auto presetDirectory = audioProcessor.getDefaultPresetDirectory();
+    if (presetDirectory.exists() && presetDirectory.isDirectory())
+    {
+        auto presetFiles = presetDirectory.findChildFiles(juce::File::findFiles, false, "*.preset");
+        for (auto& file : presetFiles)
+        {
+            addCustomPresetToMenu(file.getFileNameWithoutExtension(), file.getFullPathName());
+        }
     }
 }

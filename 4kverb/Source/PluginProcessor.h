@@ -50,6 +50,7 @@ public:
     juce::AudioProcessorValueTreeState& getParameters();
 
     float getAudioLevel() const { return audioLevel.load(); }
+    juce::File getDefaultPresetDirectory() const;
 
 private:
     //==============================================================================

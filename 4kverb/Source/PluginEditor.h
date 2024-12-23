@@ -82,14 +82,20 @@ private:
     int currentTransitionStep;
 
     std::unique_ptr<juce::MenuBarComponent> menuBar;
+    juce::PopupMenu customPresetsMenu;
+    void loadCustomPresetsFromDirectory();
+
     enum MenuIDs
     {
         loadPresetID = 1,
         savePresetID,
-        preset1ID,
+        putIntoPresetMenuID, // Add this line
+        preset1ID = 100,
         preset2ID,
-        preset3ID
+        preset3ID,
+        customPresetBaseID = 1000 // Base ID for custom presets
     };
+
 
     enum PresetIDs
     {
@@ -98,6 +104,11 @@ private:
         preset3
     };
 
+    juce::StringArray customPresets;
+
+    void putIntoPresetMenuAs();
+    void addCustomPresetToMenu(const juce::String& presetName, const juce::String& presetPath);
+    void loadCustomPreset(int presetID);
 
 
     void loadPreset();
