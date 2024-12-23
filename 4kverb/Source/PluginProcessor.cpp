@@ -345,21 +345,41 @@ juce::AudioProcessorEditor* _4kverbAudioProcessor::createEditor()
 }
 
 //==============================================================================
-void _4kverbAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void _4kverbAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
+    DBG("getStateInformation called");
     auto state = parameters.copyState();
     std::unique_ptr<juce::XmlElement> xml(state.createXml());
     copyXmlToBinary(*xml, destData);
+    DBG("State information copied to memory block");
 }
+
 
 void _4kverbAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
+    DBG("setStateInformation called");
     std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
 
-    if (xml.get() != nullptr)
+    if (xml != nullptr)
+    {
+        DBG("XML data loaded successfully");
         if (xml->hasTagName(parameters.state.getType()))
+        {
             parameters.replaceState(juce::ValueTree::fromXml(*xml));
+            DBG("State information replaced successfully");
+        }
+        else
+        {
+            DBG("XML does not have the correct tag name");
+        }
+    }
+    else
+    {
+        DBG("Failed to load XML from binary data");
+    }
 }
+
+
 
 juce::AudioProcessorValueTreeState& _4kverbAudioProcessor::getParameters()
 {

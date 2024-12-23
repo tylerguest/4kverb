@@ -4,6 +4,10 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
   <MAINGROUP id="oft9Wn" name="4kverb">
     <GROUP id="{5B2CB536-23B0-01AF-E4BE-EE30E8C5AE4C}" name="Source">
+      <FILE id="zY7fvp" name="CustomLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/CustomLookAndFeel.cpp"/>
+      <FILE id="RqFlYF" name="CustomLookAndFeel.h" compile="0" resource="0"
+            file="Source/CustomLookAndFeel.h"/>
       <FILE id="ilYIeQ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="FOeLw0" name="PluginProcessor.h" compile="0" resource="0"

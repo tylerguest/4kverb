@@ -1,3 +1,5 @@
+// In PluginEditor.cpp
+
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "CustomLookAndFeel.h"
@@ -12,12 +14,11 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     // Set knob colors to white
     setKnobColors(juce::Colours::black, juce::Colours::white, juce::Colours::black);
 
-    // PluginEditor.cpp
+    // Add the following lines to the constructor
+    menuBar = std::make_unique<juce::MenuBarComponent>(this);
+    addAndMakeVisible(menuBar.get());
 
-// Add and attach new sliders
-// PluginEditor.cpp
-
-// Add and attach new sliders
+    // Add and attach new sliders
     addAndMakeVisible(predelaySlider);
     predelaySlider.setSliderStyle(juce::Slider::Rotary);
     predelaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 25); // Adjust text box width and height
@@ -162,8 +163,6 @@ _4kverbAudioProcessorEditor::_4kverbAudioProcessorEditor(_4kverbAudioProcessor& 
     depthLabel.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
     addAndMakeVisible(depthLabel);
 
-
-
     // Initialize background colors
     currentBackgroundColor = juce::Colours::white; // Starting background color
     targetBackgroundColor = currentBackgroundColor;
@@ -183,10 +182,17 @@ _4kverbAudioProcessorEditor::~_4kverbAudioProcessorEditor()
 }
 
 //==============================================================================
+
 void _4kverbAudioProcessorEditor::paint(juce::Graphics& g)
 {
     // Fill the background with a color based on the slider values
     g.fillAll(getBackgroundColor());
+
+    juce::ColourGradient gradient(juce::Colours::transparentWhite, 0, 0,
+        juce::Colours::transparentWhite, 0, getHeight(), false);
+
+    g.setGradientFill(gradient);
+    g.fillRect(getLocalBounds());
 
     g.setColour(juce::Colours::black);
     g.setFont(juce::Font("Arial Black", 15.0f, juce::Font::bold)); // Set font to Arial Black
@@ -198,6 +204,9 @@ void _4kverbAudioProcessorEditor::resized()
     auto labelHeight = 20;
     auto sliderDiameter = 100;
     auto labelWidth = 100; // Set a fixed width for the labels
+
+    // Set the bounds for the menu bar
+    menuBar->setBounds(bounds.removeFromTop(20));
 
     // Calculate the total height needed for all sliders and labels
     auto totalHeight = (sliderDiameter + labelHeight) * 8;
@@ -246,6 +255,8 @@ void _4kverbAudioProcessorEditor::setKnobColors(juce::Colour thumbColor, juce::C
 {
     customLookAndFeel.setKnobColors(thumbColor, fillColor, outlineColor);
 }
+
+// In PluginEditor.cpp
 
 void _4kverbAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
 {
@@ -332,4 +343,159 @@ void _4kverbAudioProcessorEditor::timerCallback()
 
     // Repaint the editor
     repaint();
+}
+
+// In PluginEditor.cpp
+// In PluginEditor.cpp
+
+// In PluginEditor.cpp
+
+// In PluginEditor.cpp
+
+void _4kverbAudioProcessorEditor::loadPreset()
+{
+    DBG("loadPreset called");
+    fileChooser = std::make_unique<juce::FileChooser>("Select a preset to load", juce::File::getSpecialLocation(juce::File::userDocumentsDirectory), "*.preset");
+
+    fileChooser->launchAsync(juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles,
+        [this](const juce::FileChooser& fc)
+        {
+            auto file = fc.getResult();
+            if (file.existsAsFile())
+            {
+                DBG("File selected: " + file.getFullPathName());
+                juce::FileInputStream inputStream(file);
+                if (inputStream.openedOk())
+                {
+                    DBG("File opened successfully");
+                    juce::MemoryBlock data;
+                    inputStream.readIntoMemoryBlock(data);
+                    audioProcessor.setStateInformation(data.getData(), static_cast<int>(data.getSize()));
+                    DBG("Preset loaded from file: " + file.getFullPathName());
+                }
+                else
+                {
+                    DBG("Failed to open file: " + file.getFullPathName());
+                }
+            }
+            else
+            {
+                DBG("No file selected or file does not exist");
+            }
+
+            // Reset the fileChooser to allow future operations
+            fileChooser.reset();
+        });
+}
+
+
+
+
+void _4kverbAudioProcessorEditor::savePreset()
+{
+    DBG("savePreset called");
+    fileChooser = std::make_unique<juce::FileChooser>("Save preset as...", juce::File::getSpecialLocation(juce::File::userDocumentsDirectory), "*.preset");
+
+    fileChooser->launchAsync(juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles,
+        [this](const juce::FileChooser& fc)
+        {
+            auto file = fc.getResult();
+            if (file != juce::File{}) // Check if a file was selected
+            {
+                DBG("File selected: " + file.getFullPathName());
+                juce::MemoryBlock data;
+                audioProcessor.getStateInformation(data);
+                auto result = file.replaceWithData(data.getData(), data.getSize());
+                if (result)
+                {
+                    DBG("Preset saved to file: " + file.getFullPathName());
+                }
+                else
+                {
+                    DBG("Failed to save preset to file: " + file.getFullPathName());
+                }
+            }
+            else
+            {
+                DBG("No file selected");
+            }
+
+            // Reset the fileChooser to allow future operations
+            fileChooser.reset();
+        });
+}
+
+
+
+
+
+juce::PopupMenu _4kverbAudioProcessorEditor::getMenuForIndex(int menuIndex, const juce::String& menuName)
+{
+    juce::PopupMenu menu;
+
+    if (menuName == "File")
+    {
+        menu.addItem(_4kverbAudioProcessorEditor::MenuIDs::loadPresetID, "Load Preset");
+        menu.addItem(_4kverbAudioProcessorEditor::MenuIDs::savePresetID, "Save Preset");
+    }
+    else if (menuName == "Presets")
+    {
+        menu.addItem(PresetIDs::preset1, "Preset 1");
+        menu.addItem(PresetIDs::preset2, "Preset 2");
+        menu.addItem(PresetIDs::preset3, "Preset 3");
+    }
+
+    return menu;
+}
+
+juce::StringArray _4kverbAudioProcessorEditor::getMenuBarNames()
+{
+    return { "File", "Presets" };
+}
+
+void _4kverbAudioProcessorEditor::menuItemSelected(int menuItemID, int topLevelMenuIndex)
+{
+    switch (menuItemID)
+    {
+    case MenuIDs::loadPresetID:
+        DBG("Load Preset menu item selected");
+        loadPreset();
+        break;
+    case MenuIDs::savePresetID:
+        DBG("Save Preset menu item selected");
+        savePreset();
+        break;
+    case PresetIDs::preset1:
+        // Apply settings for preset 1
+        predelaySlider.setValue(50.0f);
+        decaySlider.setValue(5.0f);
+        sizeSlider.setValue(0.7f);
+        highCutSlider.setValue(10000.0f);
+        lowCutSlider.setValue(50.0f);
+        rateSlider.setValue(2.0f);
+        depthSlider.setValue(30.0f);
+        break;
+    case PresetIDs::preset2:
+        // Apply settings for preset 2
+        predelaySlider.setValue(100.0f);
+        decaySlider.setValue(10.0f);
+        sizeSlider.setValue(0.5f);
+        highCutSlider.setValue(15000.0f);
+        lowCutSlider.setValue(100.0f);
+        rateSlider.setValue(3.0f);
+        depthSlider.setValue(40.0f);
+        break;
+    case PresetIDs::preset3:
+        // Apply settings for preset 3
+        predelaySlider.setValue(200.0f);
+        decaySlider.setValue(20.0f);
+        sizeSlider.setValue(0.9f);
+        highCutSlider.setValue(8000.0f);
+        lowCutSlider.setValue(20.0f);
+        rateSlider.setValue(1.0f);
+        depthSlider.setValue(50.0f);
+        break;
+    default:
+        break;
+    }
 }

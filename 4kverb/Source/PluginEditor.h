@@ -7,7 +7,10 @@
 //==============================================================================
 /**
 */
-class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor, public juce::Slider::Listener, public juce::Timer
+class _4kverbAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                    public juce::Slider::Listener, 
+                                    public juce::Timer,
+                                    public juce::MenuBarModel
 {
 public:
     _4kverbAudioProcessorEditor(_4kverbAudioProcessor&);
@@ -24,6 +27,10 @@ public:
 
     // Override timerCallback
     void timerCallback() override; // Add this
+
+    juce::StringArray getMenuBarNames() override;
+    juce::PopupMenu getMenuForIndex(int menuIndex, const juce::String& menuName) override;
+    void menuItemSelected(int menuItemID, int topLevelMenuIndex) override;
 
 private:
     _4kverbAudioProcessor& audioProcessor;
@@ -62,6 +69,9 @@ private:
     juce::Label depthLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
 
+    std::unique_ptr<juce::FileChooser> fileChooser;
+
+
     // Add the getBackgroundColor method declaration
     juce::Colour getBackgroundColor();
 
@@ -70,6 +80,29 @@ private:
     juce::Colour targetBackgroundColor;
     int colorTransitionSteps;
     int currentTransitionStep;
+
+    std::unique_ptr<juce::MenuBarComponent> menuBar;
+    enum MenuIDs
+    {
+        loadPresetID = 1,
+        savePresetID,
+        preset1ID,
+        preset2ID,
+        preset3ID
+    };
+
+    enum PresetIDs
+    {
+        preset1 = 101,
+        preset2,
+        preset3
+    };
+
+
+
+    void loadPreset();
+    void savePreset();
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(_4kverbAudioProcessorEditor)
 };
