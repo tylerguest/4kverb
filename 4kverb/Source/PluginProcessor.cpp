@@ -204,46 +204,25 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce:
     auto newPredelay = parameters.getRawParameterValue("predelay")->load();
     auto newRate = parameters.getRawParameterValue("rate")->load();
     auto newDepth = parameters.getRawParameterValue("depth")->load();
+    auto newWidth = 0.8f; // Example: Set a custom width
+    auto newFreezeMode = 0.0f; // Example: Set freeze mode off
 
     // Update reverb parameters if they've changed
     if (reverbParams.roomSize != newRoomSize ||
         reverbParams.damping != newDamping ||
         reverbParams.wetLevel != newWetLevel ||
-        reverbParams.dryLevel != newDryLevel)
+        reverbParams.dryLevel != newDryLevel ||
+        reverbParams.width != newWidth ||
+        reverbParams.freezeMode != newFreezeMode)
     {
         reverbParams.roomSize = newRoomSize;
         reverbParams.damping = newDamping;
         reverbParams.wetLevel = newWetLevel;
         reverbParams.dryLevel = newDryLevel;
-        reverbParams.width = 1.0f;
+        reverbParams.width = newWidth;
+        reverbParams.freezeMode = newFreezeMode;
 
         reverb.setParameters(reverbParams);
-    }
-
-    // Update high cut filter coefficients if `highCut` parameter has changed
-    if (lastHighCut != newHighCut)
-    {
-        auto highCutCoefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(getSampleRate(), newHighCut);
-
-        for (auto& filter : highCutFilters)
-        {
-            *filter.coefficients = *highCutCoefficients;
-        }
-
-        lastHighCut = newHighCut;
-    }
-
-    // Update low cut filter coefficients if `lowCut` parameter has changed
-    if (lastLowCut != newLowCut)
-    {
-        auto lowCutCoefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), newLowCut);
-
-        for (auto& filter : lowCutFilters)
-        {
-            *filter.coefficients = *lowCutCoefficients;
-        }
-
-        lastLowCut = newLowCut;
     }
 
     // Create a wet buffer and copy the input buffer into it
