@@ -113,7 +113,7 @@ private:
     void putIntoPresetMenuAs();
     void addCustomPresetToMenu(const juce::String& presetName, const juce::String& presetPath);
     void loadCustomPreset(int presetID);
-
+    void resizeEditor(float scaleFactor);
 
     void loadPreset();
     void savePreset();

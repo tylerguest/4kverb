@@ -454,11 +454,11 @@ juce::PopupMenu _4kverbAudioProcessorEditor::getMenuForIndex(int menuIndex, cons
     }
     else if (menuName == "Size")
     {
-        menu.addItem(MenuIDs::sizeID, "75%");
-        menu.addItem(MenuIDs::sizeID, "100%");
-        menu.addItem(MenuIDs::sizeID, "125%");
-        menu.addItem(MenuIDs::sizeID, "150%");
-        menu.addItem(MenuIDs::sizeID, "200%");
+        menu.addItem(2000, "75%");
+        menu.addItem(2001, "100%");
+        menu.addItem(2002, "125%");
+        menu.addItem(2003, "150%");
+        menu.addItem(2004, "200%");
     }
 
     return menu;
@@ -518,6 +518,26 @@ void _4kverbAudioProcessorEditor::menuItemSelected(int menuItemID, int topLevelM
         rateSlider.setValue(1.0f);
         depthSlider.setValue(50.0f);
         break;
+    case MenuIDs::sizeID:
+        switch (menuItemID)
+        {
+        case 2000:
+            resizeEditor(0.75f);
+            break;
+        case 2001:
+            resizeEditor(1.0f);
+            break;
+        case 2002:
+            resizeEditor(1.25f);
+            break;
+        case 2003:
+            resizeEditor(1.5f);
+            break;
+        case 2004:
+            resizeEditor(2.0f);
+            break;
+        }
+        break;
     default:
         if (menuItemID >= MenuIDs::customPresetBaseID)
         {
@@ -527,6 +547,7 @@ void _4kverbAudioProcessorEditor::menuItemSelected(int menuItemID, int topLevelM
         break;
     }
 }
+
 
 void _4kverbAudioProcessorEditor::putIntoPresetMenuAs()
 {
@@ -604,4 +625,18 @@ void _4kverbAudioProcessorEditor::loadCustomPresetsFromDirectory()
             addCustomPresetToMenu(file.getFileNameWithoutExtension(), file.getFullPathName());
         }
     }
+}
+
+void _4kverbAudioProcessorEditor::resizeEditor(float scaleFactor)
+{
+    // Get the current size of the editor
+    auto currentWidth = getWidth();
+    auto currentHeight = getHeight();
+
+    // Calculate the new size based on the scale factor
+    auto newWidth = static_cast<int>(currentWidth * scaleFactor);
+    auto newHeight = static_cast<int>(currentHeight * scaleFactor);
+
+    // Set the new size of the editor
+    setSize(newWidth, newHeight);
 }
