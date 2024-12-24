@@ -1,3 +1,8 @@
 # 4kverb
+
 Simple reverb channel strip style reverb plugin built with JUCE 8.
-![Plugin Screenshot](assets/4kverb_przy3Jgw2Q.png)
+
+<p align="center">
+  <img src="assets/4kverb_przy3Jgw2Q.png" alt="Plugin Screenshot" width="45%">
+  <img src="assets/4kverb_preview.gif" alt="Plugin Video" width="45%">
+</p>
