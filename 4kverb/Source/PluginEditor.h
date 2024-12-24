@@ -73,8 +73,6 @@ private:
 
     std::unique_ptr<juce::FileChooser> fileChooser;
 
-
-
     // Add the getBackgroundColor method declaration
     juce::Colour getBackgroundColor();
 
