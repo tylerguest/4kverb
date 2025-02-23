@@ -14,9 +14,8 @@ void CustomLookAndFeel::setKnobColors(juce::Colour thumbColor, juce::Colour fill
     this->outlineColor = outlineColor;
 }
 
-
-void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
-    float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider)
+void CustomLookAndFeel::drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
+                                         float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &slider)
 {
     auto radius = (float)juce::jmin(width / 2, height / 2) - 4.0f;
     auto centerX = (float)x + (float)width * 0.5f;
@@ -39,7 +38,7 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
     g.fillEllipse(rx, ry, rw, rw);
 
     // Outline
-    g.setColour(outlineColor); // Ensure transparency is applied
+    g.setColour(outlineColor);           // Ensure transparency is applied
     g.drawEllipse(rx, ry, rw, rw, 5.0f); // Set outline thickness to 2.0f
 
     // Thumb (notch) as a line
@@ -47,8 +46,8 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
     auto thumbLength = radius / 2.0f; // Set thumb length to half the radius
 
     // Calculate the thumb positions
-    auto thumbX1 = centerX + (radius - 2.0f) * std::cos(angle); // Position at the border
-    auto thumbY1 = centerY + (radius - 2.0f) * std::sin(angle); // Position at the border
+    auto thumbX1 = centerX + (radius - 2.0f) * std::cos(angle);               // Position at the border
+    auto thumbY1 = centerY + (radius - 2.0f) * std::sin(angle);               // Position at the border
     auto thumbX2 = centerX + (radius - 2.0f - thumbLength) * std::cos(angle); // Half the length
     auto thumbY2 = centerY + (radius - 2.0f - thumbLength) * std::sin(angle); // Half the length
 
@@ -56,7 +55,7 @@ void CustomLookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int wi
     g.drawLine(thumbX1, thumbY1, thumbX2, thumbY2, thumbWidth);
 }
 
-void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
+void CustomLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)
 {
     g.setColour(label.findColour(juce::Label::textColourId));
 
@@ -71,9 +70,9 @@ void CustomLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label)
     g.drawFittedText(text, textArea, juce::Justification::centred, 1);
 }
 
-juce::Font CustomLookAndFeel::getMenuBarFont(juce::MenuBarComponent& menuBar, int itemIndex, const juce::String& itemText)
+juce::Font CustomLookAndFeel::getMenuBarFont(juce::MenuBarComponent &menuBar, int itemIndex, const juce::String &itemText)
 {
-    if (auto* menuBarModel = menuBar.getModel())
+    if (auto *menuBarModel = menuBar.getModel())
     {
         float fontSize = calculateMenuBarFontSize(menuBar, *menuBarModel);
         return juce::Font(juce::Font::getDefaultSansSerifFontName(), fontSize, juce::Font::plain);
@@ -81,18 +80,16 @@ juce::Font CustomLookAndFeel::getMenuBarFont(juce::MenuBarComponent& menuBar, in
     return juce::Font(juce::Font::getDefaultSansSerifFontName(), 12.0f, juce::Font::plain); // Fallback font size
 }
 
-// Replace the entire function with the following:
-
-float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent& menuBar, juce::MenuBarModel& menuBarModel)
+float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent &menuBar, juce::MenuBarModel &menuBarModel)
 {
     auto menuBarNames = menuBarModel.getMenuBarNames();
     auto totalAvailableWidth = static_cast<float>(menuBar.getWidth()) - (menuBarNames.size() * 20.0f); // Adjust for padding
-    float fontSize = 16.0f; // Start with a default font size
+    float fontSize = 16.0f;                                                                            // Start with a default font size
     juce::Font font(juce::Font::getDefaultSansSerifFontName(), fontSize, juce::Font::plain);
 
     float totalRequiredWidth = 0.0f;
 
-    for (const auto& menuName : menuBarNames)
+    for (const auto &menuName : menuBarNames)
         totalRequiredWidth += font.getStringWidth(menuName) + 10.0f; // Adjust for padding
 
     while (totalRequiredWidth > totalAvailableWidth && fontSize > 10.0f)
@@ -101,10 +98,9 @@ float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent& 
         font.setHeight(fontSize);
         totalRequiredWidth = 0.0f;
 
-        for (const auto& menuName : menuBarNames)
+        for (const auto &menuName : menuBarNames)
             totalRequiredWidth += font.getStringWidth(menuName) + 20.0f; // Adjust for padding
     }
 
     return fontSize;
 }
-

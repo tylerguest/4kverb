@@ -5,8 +5,8 @@
 
 //==============================================================================
 /**
-*/
-class _4kverbAudioProcessor  : public juce::AudioProcessor
+ */
+class _4kverbAudioProcessor : public juce::AudioProcessor
 {
 public:
     //==============================================================================
@@ -14,17 +14,17 @@ public:
     ~_4kverbAudioProcessor() override;
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #if ! JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
+#if !JucePlugin_PreferredChannelConfigurations
+    bool isBusesLayoutSupported(const BusesLayout &layouts) const override;
+#endif
 
-    void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
+    void processBlock(juce::AudioBuffer<float> &, juce::MidiBuffer &) override;
 
     //==============================================================================
-    juce::AudioProcessorEditor* createEditor() override;
+    juce::AudioProcessorEditor *createEditor() override;
     bool hasEditor() const override;
 
     //==============================================================================
@@ -38,16 +38,16 @@ public:
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
-    void setCurrentProgram (int index) override;
-    const juce::String getProgramName (int index) override;
-    void changeProgramName (int index, const juce::String& newName) override;
+    void setCurrentProgram(int index) override;
+    const juce::String getProgramName(int index) override;
+    void changeProgramName(int index, const juce::String &newName) override;
 
     //==============================================================================
-    void getStateInformation (juce::MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void getStateInformation(juce::MemoryBlock &destData) override;
+    void setStateInformation(const void *data, int sizeInBytes) override;
 
     // Provide a getter method for parameters
-    juce::AudioProcessorValueTreeState& getParameters();
+    juce::AudioProcessorValueTreeState &getParameters();
 
     float getAudioLevel() const { return audioLevel.load(); }
     juce::File getDefaultPresetDirectory() const;
@@ -71,10 +71,9 @@ private:
     // In your plugin processor class
     std::vector<juce::dsp::DelayLine<float>> predelayLines;
 
-    std::atomic<float> audioLevel{ 0.0f };
-
+    std::atomic<float> audioLevel{0.0f};
 
     float modulationDepth = 0.5f;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (_4kverbAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(_4kverbAudioProcessor)
 };

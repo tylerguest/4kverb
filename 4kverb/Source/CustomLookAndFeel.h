@@ -9,16 +9,16 @@ public:
 
     void setKnobColors(juce::Colour thumbColor, juce::Colour fillColor, juce::Colour outlineColor);
 
-    void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,
-        float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider) override;
+    void drawRotarySlider(juce::Graphics &g, int x, int y, int width, int height,
+                          float sliderPosProportional, float rotaryStartAngle, float rotaryEndAngle, juce::Slider &slider) override;
 
-    void drawLabel(juce::Graphics& g, juce::Label& label) override;
-
-    // Add this method declaration
-    juce::Font getMenuBarFont(juce::MenuBarComponent& menuBar, int itemIndex, const juce::String& itemText) override;
+    void drawLabel(juce::Graphics &g, juce::Label &label) override;
 
     // Add this method declaration
-    float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent& menuBar, juce::MenuBarModel& menuBarModel);
+    juce::Font getMenuBarFont(juce::MenuBarComponent &menuBar, int itemIndex, const juce::String &itemText) override;
+
+    // Add this method declaration
+    float CustomLookAndFeel::calculateMenuBarFontSize(const juce::MenuBarComponent &menuBar, juce::MenuBarModel &menuBarModel);
 
 private:
     juce::Colour thumbColor;
