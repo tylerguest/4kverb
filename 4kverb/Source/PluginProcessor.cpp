@@ -1,7 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-//==============================================================================
 _4kverbAudioProcessor::_4kverbAudioProcessor()
     : AudioProcessor(BusesProperties()
 #if !JucePlugin_IsMidiEffect
@@ -21,7 +20,6 @@ _4kverbAudioProcessor::_4kverbAudioProcessor()
                   std::make_unique<juce::AudioParameterFloat>("rate", "Rate", 0.1f, 10.0f, 1.0f),
                   std::make_unique<juce::AudioParameterFloat>("depth", "Depth", 0.0f, 100.0f, 50.0f)})
 {
-    // Initialize reverb parameters
     reverbParams.roomSize = *parameters.getRawParameterValue("size");
     reverbParams.damping = *parameters.getRawParameterValue("decay");
     reverbParams.wetLevel = *parameters.getRawParameterValue("mix");
@@ -33,7 +31,6 @@ _4kverbAudioProcessor::~_4kverbAudioProcessor()
 {
 }
 
-//==============================================================================
 juce::File _4kverbAudioProcessor::getDefaultPresetDirectory() const
 {
     auto presetDirectory = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("4kverbPresets");
@@ -102,15 +99,11 @@ void _4kverbAudioProcessor::changeProgramName(int index, const juce::String &new
 {
 }
 
-//==============================================================================
 void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     reverb.setSampleRate(sampleRate);
-
-    // Prepare reverb with initial parameters
     reverb.setParameters(reverbParams);
 
-    // Prepare high cut filters for each channel
     auto totalNumChannels = getTotalNumOutputChannels();
     highCutFilters.clear();
     highCutFilters.resize(totalNumChannels);
@@ -119,16 +112,16 @@ void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock
     lowCutFilters.resize(totalNumChannels);
 
     predelayLines.clear();
-    predelayLines.resize(totalNumChannels); // Ensure predelayLines is resized
+    predelayLines.resize(totalNumChannels); 
 
     juce::dsp::ProcessSpec spec;
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = 1; // Each filter handles one channel
+    spec.numChannels = 1; 
 
     for (auto &delayLine : predelayLines)
     {
-        delayLine.setMaximumDelayInSamples(static_cast<int>(sampleRate * 0.5)); // 500ms max predelay
+        delayLine.setMaximumDelayInSamples(static_cast<int>(sampleRate * 0.5));
         delayLine.prepare(spec);
         delayLine.reset();
     }
@@ -137,8 +130,6 @@ void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock
     {
         filter.prepare(spec);
         filter.reset();
-
-        // Initialize with default low-pass coefficients (optional)
         filter.coefficients = juce::dsp::IIR::Coefficients<float>::makeLowPass(sampleRate, 1000.0f);
     }
 
@@ -146,8 +137,6 @@ void _4kverbAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock
     {
         filter.prepare(spec);
         filter.reset();
-
-        // Initialize with default high-pass coefficients (optional)
         filter.coefficients = juce::dsp::IIR::Coefficients<float>::makeHighPass(sampleRate, 20.0f);
     }
 }
@@ -163,21 +152,17 @@ bool _4kverbAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) c
     juce::ignoreUnused(layouts);
     return true;
 #else
-    // Only mono or stereo is supported
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
 #if !JucePlugin_IsSynth
-    // Input and output layouts must match
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
 #endif
-
     return true;
 #endif
 }
 #endif
-
 void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::MidiBuffer &midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
@@ -185,11 +170,9 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // Clear unused output channels
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
-    // Retrieve parameter values
     auto newRoomSize = parameters.getRawParameterValue("size")->load();
     auto newDamping = parameters.getRawParameterValue("decay")->load();
     auto newWetLevel = parameters.getRawParameterValue("mix")->load();
@@ -199,10 +182,9 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
     auto newPredelay = parameters.getRawParameterValue("predelay")->load();
     auto newRate = parameters.getRawParameterValue("rate")->load();
     auto newDepth = parameters.getRawParameterValue("depth")->load();
-    auto newWidth = 0.8f;      // Example: Set a custom width
-    auto newFreezeMode = 0.0f; // Example: Set freeze mode off
+    auto newWidth = 0.8f;      
+    auto newFreezeMode = 0.0f;
 
-    // Update reverb parameters if they've changed
     if (reverbParams.roomSize != newRoomSize ||
         reverbParams.damping != newDamping ||
         reverbParams.wetLevel != newWetLevel ||
@@ -220,16 +202,13 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         reverb.setParameters(reverbParams);
     }
 
-    // Create a wet buffer and copy the input buffer into it
     juce::AudioBuffer<float> wetBuffer(buffer.getNumChannels(), buffer.getNumSamples());
     wetBuffer.makeCopyOf(buffer);
 
-    // Apply predelay to the wet buffer
     for (int channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
     {
         auto *wetData = wetBuffer.getWritePointer(channel);
 
-        // Update predelay time for each channel
         predelayLines[channel].setDelay(newPredelay * getSampleRate() / 1000.0f);
 
         for (int sample = 0; sample < wetBuffer.getNumSamples(); ++sample)
@@ -239,7 +218,6 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         }
     }
 
-    // Apply modulation to the delay lines
     static float phase = 0.0f;
     float phaseIncrement = 2.0f * juce::MathConstants<float>::pi * newRate / getSampleRate();
     for (int channel = 0; channel < wetBuffer.getNumChannels(); ++channel)
@@ -248,7 +226,7 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         for (int sample = 0; sample < wetBuffer.getNumSamples(); ++sample)
         {
             float modulatedDelay = newPredelay + newDepth * std::sin(phase);
-            modulatedDelay = juce::jlimit(0.0f, 500.0f, modulatedDelay); // Clamp the modulated delay value
+            modulatedDelay = juce::jlimit(0.0f, 500.0f, modulatedDelay); 
             predelayLines[channel].setDelay(modulatedDelay * getSampleRate() / 1000.0f);
             phase += phaseIncrement;
             if (phase >= 2.0f * juce::MathConstants<float>::pi)
@@ -256,7 +234,6 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         }
     }
 
-    // Process the wet buffer with reverb
     if (wetBuffer.getNumChannels() >= 2)
     {
         reverb.processStereo(wetBuffer.getWritePointer(0),
@@ -268,7 +245,6 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         reverb.processMono(wetBuffer.getWritePointer(0), wetBuffer.getNumSamples());
     }
 
-    // Apply high cut filter to each channel of the wet buffer
     juce::dsp::AudioBlock<float> wetBlock(wetBuffer);
 
     for (size_t channel = 0; channel < wetBlock.getNumChannels(); ++channel)
@@ -278,7 +254,6 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         highCutFilters[channel].process(context);
     }
 
-    // Apply low cut filter to each channel of the wet buffer
     for (size_t channel = 0; channel < wetBlock.getNumChannels(); ++channel)
     {
         auto channelBlock = wetBlock.getSingleChannelBlock(channel);
@@ -286,19 +261,15 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
         lowCutFilters[channel].process(context);
     }
 
-    // Mix dry and wet signals
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
     {
         auto *dryData = buffer.getWritePointer(channel);
-        auto *wetData = wetBuffer.getReadPointer(channel);
 
         for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
         {
             dryData[sample] = dryData[sample] * reverbParams.dryLevel + wetData[sample] * reverbParams.wetLevel;
-        }
     }
 
-    // Calculate the audio level
     float currentLevel = 0.0f;
     for (int channel = 0; channel < buffer.getNumChannels(); ++channel)
     {
@@ -306,14 +277,11 @@ void _4kverbAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce:
     }
     currentLevel /= static_cast<float>(buffer.getNumChannels());
 
-    // Store the audio level
     audioLevel.store(currentLevel);
 
-    // Debug statement
     DBG("Audio Level: " << currentLevel);
 }
 
-//==============================================================================
 bool _4kverbAudioProcessor::hasEditor() const
 {
     return true;
@@ -324,7 +292,6 @@ juce::AudioProcessorEditor *_4kverbAudioProcessor::createEditor()
     return new _4kverbAudioProcessorEditor(*this);
 }
 
-//==============================================================================
 void _4kverbAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
     DBG("getStateInformation called");
@@ -363,7 +330,6 @@ juce::AudioProcessorValueTreeState &_4kverbAudioProcessor::getParameters()
     return parameters;
 }
 
-//==============================================================================
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
     return new _4kverbAudioProcessor();
